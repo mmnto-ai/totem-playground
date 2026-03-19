@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "lessonHash": "playground-001",
+      "lessonHeading": "Use a validated config schema instead of direct process.env access",
+      "pattern": "process\\.env\\[",
+      "message": "Direct process.env access detected. Use a validated config schema (e.g., Zod + a config.ts module) to catch missing or invalid env vars at startup instead of runtime.",
+      "engine": "regex",
+      "severity": "error",
+      "compiledAt": "2026-03-19T00:00:00.000Z",
+      "fileGlobs": ["src/**/*.ts", "src/**/*.tsx", "!src/**/config.ts", "!src/**/env.ts"]
+    },
+    {
+      "lessonHash": "playground-002",
+      "lessonHeading": "Never swallow errors with empty catch blocks",
+      "pattern": "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}",
+      "message": "Empty catch block swallows errors silently. At minimum, log the error. Better: handle it explicitly or let it propagate.",
+      "engine": "regex",
+      "severity": "error",
+      "compiledAt": "2026-03-19T00:00:00.000Z",
+      "fileGlobs": ["src/**/*.ts", "src/**/*.tsx"]
+    },
+    {
+      "lessonHash": "playground-003",
+      "lessonHeading": "Use domain-specific error classes instead of raw Error",
+      "pattern": "throw\\s+new\\s+Error\\s*\\(",
+      "message": "Raw 'throw new Error()' provides no error classification. Use domain-specific error classes (e.g., AuthError, ValidationError) with typed codes and recovery hints.",
+      "engine": "regex",
+      "severity": "error",
+      "compiledAt": "2026-03-19T00:00:00.000Z",
+      "fileGlobs": ["src/**/*.ts", "src/**/*.tsx"]
+    },
+    {
+      "lessonHash": "playground-004",
+      "lessonHeading": "Use structured logging instead of console.log in API routes",
+      "pattern": "console\\.(log|info|debug)\\s*\\(",
+      "message": "console.log in API routes loses context in production. Use a structured logger (e.g., pino, winston) with request IDs and log levels.",
+      "engine": "regex",
+      "severity": "error",
+      "compiledAt": "2026-03-19T00:00:00.000Z",
+      "fileGlobs": ["src/app/api/**/*.ts"]
+    },
+    {
+      "lessonHash": "playground-005",
+      "lessonHeading": "Never build SQL queries with string concatenation",
+      "pattern": "['\"]\\s*(?:SELECT|INSERT|UPDATE|DELETE)\\b[^'\"]*['\"]\\s*\\+",
+      "message": "String concatenation in SQL queries is a SQL injection vector. Use parameterized queries, prepared statements, or an ORM.",
+      "engine": "regex",
+      "severity": "error",
+      "compiledAt": "2026-03-19T00:00:00.000Z",
+      "fileGlobs": ["src/**/*.ts"]
+    }
+  ],
+  "nonCompilable": []
+}

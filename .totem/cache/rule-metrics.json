@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "rules": {
+    "playground-001": {
+      "triggerCount": 9,
+      "suppressCount": 0,
+      "lastTriggeredAt": "2026-03-19T20:37:33.678Z",
+      "lastSuppressedAt": null
+    },
+    "playground-003": {
+      "triggerCount": 9,
+      "suppressCount": 0,
+      "lastTriggeredAt": "2026-03-19T20:37:33.678Z",
+      "lastSuppressedAt": null
+    },
+    "playground-004": {
+      "triggerCount": 6,
+      "suppressCount": 0,
+      "lastTriggeredAt": "2026-03-19T20:37:33.678Z",
+      "lastSuppressedAt": null
+    },
+    "playground-005": {
+      "triggerCount": 3,
+      "suppressCount": 0,
+      "lastTriggeredAt": "2026-03-19T20:37:33.678Z",
+      "lastSuppressedAt": null
+    },
+    "playground-002": {
+      "triggerCount": 4,
+      "suppressCount": 0,
+      "lastTriggeredAt": "2026-03-19T20:37:33.678Z",
+      "lastSuppressedAt": null
+    }
+  }
+}

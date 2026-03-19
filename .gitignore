@@ -1,0 +1,6 @@
+node_modules/
+.next/
+.lancedb/
+.totem/sync.lock
+.env
+.env.local
