@@ -9,7 +9,7 @@ A broken Next.js app with 5 intentional architectural violations. [Totem](https:
 When the terminal opens, run:
 
 ```bash
-npx @mmnto/cli lint
+totem lint --staged
 ```
 
 ### Or run locally
