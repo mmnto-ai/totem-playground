@@ -1,6 +1,0 @@
-{
-  "provider": "gemini",
-  "model": "gemini-embedding-2-preview",
-  "dimensions": 768,
-  "lastSync": "2026-03-28T17:27:04.979Z"
-}
