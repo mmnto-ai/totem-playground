@@ -29,8 +29,17 @@ No API keys needed. No config. Just clone and lint.
 | 1 | Direct `process.env` access | API routes, middleware, db.ts | Missing env vars crash at runtime instead of startup |
 | 2 | Empty `catch(e) {}` blocks | users/route.ts, auth.ts | Errors vanish silently — impossible to debug |
 | 3 | Raw `throw new Error()` | auth/route.ts, auth.ts | No error classification, no recovery hints |
-| 4 | `console.log` in API routes | users/route.ts | Loses context in production, no request IDs |
+| 4 | `console.log` in API routes | users/route.ts | Loses context in production, no request IDs |   
 | 5 | SQL string concatenation | users/route.ts, db.ts | SQL injection — the oldest vulnerability in the book |
+
+## Resilience Tests
+
+This repository also serves as the validation harness for Totem's runtime resilience. It documents how the system behaves under adversarial or corrupted states:
+
+- **Ghost AST Rules:** If a compiled rule contains a Tree-sitter node type that does not exist, the lint engine warns and skips the rule; the process does not crash.
+- **Overly Broad Regex:** If a rule compiles into an unbounded regex, the impact is isolated to the changed lines only (via git diff-scoping), preventing full-file false positives.
+- **Corrupt Exemption State:** If the `.totem/exemptions.json` ledger is malformed, the engine emits a warning and treats the file as empty — enforcement continues without exemptions, making the system stricter rather than permissive.
+- **Stale Vector Context:** If the LanceDB vector index contains outdated lessons, it does not impact enforcement; `totem lint` strictly evaluates against `compiled-rules.json`.
 
 ## Fix Them
 
