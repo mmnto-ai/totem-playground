@@ -2,5 +2,9 @@ node_modules/
 .next/
 .lancedb/
 .totem/sync.lock
+.totem/cache/
+.totem/temp/
+.totem/secrets.json
+.claude/
 .env
 .env.local

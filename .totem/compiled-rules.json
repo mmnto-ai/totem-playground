@@ -2,55 +2,342 @@
   "version": 1,
   "rules": [
     {
-      "lessonHash": "playground-001",
-      "lessonHeading": "Use a validated config schema instead of direct process.env access",
-      "pattern": "process\\.env\\[",
-      "message": "Direct process.env access detected. Use a validated config schema (e.g., Zod + a config.ts module) to catch missing or invalid env vars at startup instead of runtime.",
-      "engine": "regex",
-      "severity": "error",
-      "compiledAt": "2026-03-19T00:00:00.000Z",
-      "fileGlobs": ["src/**/*.ts", "src/**/*.tsx", "!src/**/config.ts", "!src/**/env.ts"]
+      "lessonHash": "7fc0dfeb02237a54",
+      "lessonHeading": "Effects must clean up subscriptions and timers",
+      "pattern": "",
+      "message": "Effects that create subscriptions, timers, or event listeners must return a cleanup function.",
+      "engine": "ast",
+      "astQuery": "(call_expression function: (identifier) @name (#eq? @name \"useEffect\") arguments: (arguments (arrow_function body: (statement_block) @body (#match? @body \"(setTimeout|setInterval|addEventListener|\\\\.subscribe)\") (#not-match? @body \"return\\\\s*(\\\\(\\\\s*\\\\)|function)\")))) @violation",
+      "compiledAt": "2026-03-28T16:32:10.384Z",
+      "createdAt": "2026-03-28T16:32:10.384Z",
+      "fileGlobs": [
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx"
+      ],
+      "severity": "warning"
     },
     {
-      "lessonHash": "playground-002",
-      "lessonHeading": "Never swallow errors with empty catch blocks",
-      "pattern": "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}",
-      "message": "Empty catch block swallows errors silently. At minimum, log the error. Better: handle it explicitly or let it propagate.",
-      "engine": "regex",
-      "severity": "error",
-      "compiledAt": "2026-03-19T00:00:00.000Z",
-      "fileGlobs": ["src/**/*.ts", "src/**/*.tsx"]
+      "lessonHash": "3216f3a4bcf3d74c",
+      "lessonHeading": "Runtime crashes from missing environment variables",
+      "pattern": "",
+      "message": "Direct access to process.env is discouraged. Use a validated environment schema (e.g., with Zod) to prevent runtime errors from missing variables.",
+      "engine": "ast-grep",
+      "astGrepPattern": "process.env.$VAR",
+      "compiledAt": "2026-03-28T16:32:33.113Z",
+      "createdAt": "2026-03-28T16:32:33.113Z",
+      "fileGlobs": [
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.js",
+        "**/*.jsx"
+      ],
+      "severity": "warning"
     },
     {
-      "lessonHash": "playground-003",
-      "lessonHeading": "Use domain-specific error classes instead of raw Error",
-      "pattern": "throw\\s+new\\s+Error\\s*\\(",
-      "message": "Raw 'throw new Error()' provides no error classification. Use domain-specific error classes (e.g., AuthError, ValidationError) with typed codes and recovery hints.",
+      "lessonHash": "b4092e1d17041aed",
+      "lessonHeading": "Build-time vs runtime env var confusion",
+      "pattern": "\\b(NEXT_PUBLIC_|VITE_).*(SECRET|KEY|TOKEN|PASSWORD|PRIVATE|PASS|PWD)\\b",
+      "message": "A public environment variable (prefixed with NEXT_PUBLIC_ or VITE_) appears to contain a secret. These variables are embedded in the client-side bundle and should not be used for secrets.",
       "engine": "regex",
-      "severity": "error",
-      "compiledAt": "2026-03-19T00:00:00.000Z",
-      "fileGlobs": ["src/**/*.ts", "src/**/*.tsx"]
+      "compiledAt": "2026-03-28T16:32:45.618Z",
+      "createdAt": "2026-03-28T16:32:45.618Z",
+      "fileGlobs": [
+        "**/.env*",
+        "**/*.sh",
+        "**/*.bash",
+        "**/*.yml",
+        "**/*.yaml",
+        "**/next.config.js",
+        "**/next.config.mjs",
+        "**/vite.config.ts",
+        "**/vite.config.js"
+      ],
+      "severity": "warning"
     },
     {
-      "lessonHash": "playground-004",
-      "lessonHeading": "Use structured logging instead of console.log in API routes",
-      "pattern": "console\\.(log|info|debug)\\s*\\(",
-      "message": "console.log in API routes loses context in production. Use a structured logger (e.g., pino, winston) with request IDs and log levels.",
+      "lessonHash": "53336889d06041db",
+      "lessonHeading": "Hardcoded localhost URLs in production code",
+      "pattern": "['\"`].*(localhost|127\\.0\\.0\\.1).*['\"`]",
+      "message": "Hardcoded 'localhost' or '127.0.0.1' URLs in string literals will break in production. Use environment variables or derive from request context.",
       "engine": "regex",
-      "severity": "error",
-      "compiledAt": "2026-03-19T00:00:00.000Z",
-      "fileGlobs": ["src/app/api/**/*.ts"]
+      "compiledAt": "2026-03-28T16:33:40.329Z",
+      "createdAt": "2026-03-28T16:33:40.329Z",
+      "fileGlobs": [
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/*.test.*",
+        "!**/*.spec.*"
+      ],
+      "severity": "warning"
     },
     {
-      "lessonHash": "playground-005",
-      "lessonHeading": "Never build SQL queries with string concatenation",
-      "pattern": "['\"]\\s*(?:SELECT|INSERT|UPDATE|DELETE)\\b[^'\"]*['\"]\\s*\\+",
-      "message": "String concatenation in SQL queries is a SQL injection vector. Use parameterized queries, prepared statements, or an ORM.",
+      "lessonHash": "27b3760e590d031d",
+      "lessonHeading": "Empty catch blocks hide critical failures",
+      "pattern": "",
+      "message": "Empty catch blocks swallow errors. At a minimum, log the error or add a comment explaining why it is safe to ignore.",
+      "engine": "ast",
+      "astQuery": "(catch_clause body: (statement_block) @body (#eq? @body \"{}\")) @violation",
+      "compiledAt": "2026-03-28T16:34:20.470Z",
+      "createdAt": "2026-03-28T16:34:20.470Z",
+      "fileGlobs": [
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx"
+      ],
+      "severity": "warning"
+    },
+    {
+      "lessonHash": "97c4252bc6b4ec78",
+      "lessonHeading": "Environment-specific URL handling leaking across boundaries",
+      "pattern": "(file|turbopack):\\/\\/",
+      "message": "Avoid hardcoding dev-only URL protocols (e.g., 'file://', 'turbopack://'). Normalize these at the environment boundary to prevent broken paths in production.",
       "engine": "regex",
-      "severity": "error",
-      "compiledAt": "2026-03-19T00:00:00.000Z",
-      "fileGlobs": ["src/**/*.ts"]
+      "compiledAt": "2026-03-28T16:34:40.206Z",
+      "createdAt": "2026-03-28T16:34:40.206Z",
+      "fileGlobs": [
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.js",
+        "**/*.jsx",
+        "!**/*.test.ts",
+        "!**/*.test.tsx",
+        "!**/*.spec.ts",
+        "!**/*.spec.tsx",
+        "!**/*.test.js",
+        "!**/*.test.jsx",
+        "!**/*.spec.js",
+        "!**/*.spec.jsx"
+      ],
+      "severity": "warning"
+    },
+    {
+      "lessonHash": "c4e5812e984fb68a",
+      "lessonHeading": "Regex/Matcher divergence between dev and prod runtimes",
+      "pattern": "\\(\\?<[=!]",
+      "message": "Avoid Node.js-specific regex features like lookbehind in Edge middleware, as they are not supported in all V8 runtimes.",
+      "engine": "regex",
+      "compiledAt": "2026-03-28T16:34:39.326Z",
+      "createdAt": "2026-03-28T16:34:39.326Z",
+      "fileGlobs": [
+        "**/middleware.ts",
+        "**/middleware.js"
+      ],
+      "severity": "warning"
+    },
+    {
+      "lessonHash": "1961fb9cb829f126",
+      "lessonHeading": "Internal modules establishing cyclic dependencies on ambient type declarations",
+      "pattern": "import.*from\\s+['\"][^'\"]+\\.d\\.ts['\"]",
+      "message": "Do not import directly from ambient type declaration files (.d.ts). This creates a cyclic dependency on user-generated types.",
+      "engine": "regex",
+      "compiledAt": "2026-03-28T16:34:38.952Z",
+      "createdAt": "2026-03-28T16:34:38.952Z",
+      "fileGlobs": [
+        "**/*.ts",
+        "**/*.tsx"
+      ],
+      "severity": "warning"
+    },
+    {
+      "lessonHash": "94492c8e8b591fa2",
+      "lessonHeading": "Style injection breaking modular chunk loading",
+      "pattern": "",
+      "message": "Injecting <style> tags directly from JavaScript can lead to race conditions and duplicate styles. Use the bundler's dedicated CSS handling instead.",
+      "engine": "ast-grep",
+      "astGrepPattern": "document.createElement('style')",
+      "compiledAt": "2026-03-28T16:35:15.939Z",
+      "createdAt": "2026-03-28T16:35:15.939Z",
+      "fileGlobs": [
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/*.test.js",
+        "!**/*.test.jsx",
+        "!**/*.test.ts",
+        "!**/*.test.tsx"
+      ],
+      "severity": "warning"
+    },
+    {
+      "lessonHash": "953680a0b3d82ba0",
+      "lessonHeading": "Race conditions during batched state updates",
+      "pattern": "this\\.setState\\(\\s*\\{[^\\)]*this\\.state",
+      "message": "When new state depends on previous state, use the functional update form of setState: `setState(prev => ...)` to avoid race conditions.",
+      "engine": "regex",
+      "compiledAt": "2026-03-28T16:35:59.359Z",
+      "createdAt": "2026-03-28T16:35:59.359Z",
+      "fileGlobs": [
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/*.test.js",
+        "!**/*.test.jsx",
+        "!**/*.test.ts",
+        "!**/*.test.tsx",
+        "!**/*.spec.js",
+        "!**/*.spec.jsx",
+        "!**/*.spec.ts",
+        "!**/*.spec.tsx"
+      ],
+      "severity": "warning"
+    },
+    {
+      "lessonHash": "49f268d420c843ba",
+      "lessonHeading": "Serialization failures when passing complex objects to devtools",
+      "pattern": "",
+      "message": "Calls to useDebugValue with a single argument can cause serialization errors in DevTools. Provide a formatting function as the second argument to safely inspect complex values.",
+      "engine": "ast-grep",
+      "astGrepPattern": "useDebugValue($ARG)",
+      "compiledAt": "2026-03-28T16:36:27.513Z",
+      "createdAt": "2026-03-28T16:36:27.513Z",
+      "fileGlobs": [
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx"
+      ],
+      "severity": "warning"
+    },
+    {
+      "lessonHash": "90a40e29b66fd7ac",
+      "lessonHeading": "Bypassing standard synthetic event systems for performance",
+      "pattern": "",
+      "message": "Avoid raw DOM event listeners (.addEventListener). Prefer React's synthetic event system (e.g., onClick) for better compatibility and batching.",
+      "engine": "ast-grep",
+      "astGrepPattern": "$EL.addEventListener($EVENT, $HANDLER)",
+      "compiledAt": "2026-03-28T16:36:20.226Z",
+      "createdAt": "2026-03-28T16:36:20.226Z",
+      "fileGlobs": [
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.js",
+        "**/*.jsx",
+        "!**/*.test.ts",
+        "!**/*.test.tsx",
+        "!**/*.test.js",
+        "!**/*.test.jsx"
+      ],
+      "severity": "warning"
+    },
+    {
+      "lessonHash": "7a93f2b945e26bae",
+      "lessonHeading": "Hardcoded component logic inside top-level layout files",
+      "pattern": "\\buse(State|Effect|Memo|Callback|Reducer)\\b",
+      "message": "Avoid complex logic (hooks like useState, useEffect) in root layout files (_app.tsx, layout.tsx). Extract stateful UI into dedicated components.",
+      "engine": "regex",
+      "compiledAt": "2026-03-28T16:38:02.352Z",
+      "createdAt": "2026-03-28T16:38:02.352Z",
+      "fileGlobs": [
+        "**/pages/_app.ts",
+        "**/pages/_app.tsx",
+        "**/pages/_app.js",
+        "**/pages/_app.jsx",
+        "**/app/layout.ts",
+        "**/app/layout.tsx",
+        "**/app/layout.js",
+        "**/app/layout.jsx"
+      ],
+      "severity": "warning"
+    },
+    {
+      "lessonHash": "2f7aa7e2ece39f0c",
+      "lessonHeading": "Type assertions (as) bypass safety checks",
+      "message": "Type assertions with 'as any' or 'as unknown as' bypass type safety. Use type guards or schema validation instead.",
+      "engine": "regex",
+      "severity": "warning",
+      "pattern": "\\bas\\s+(any|unknown\\s+as)\\b",
+      "compiledAt": "2026-03-28T17:46:48.131Z",
+      "createdAt": "2026-03-28T17:46:48.131Z",
+      "fileGlobs": [
+        "**/*.ts",
+        "**/*.tsx"
+      ]
+    },
+    {
+      "lessonHash": "6c7c1e94506dc7ee",
+      "lessonHeading": "Swallowing critical errors during SSR",
+      "message": "Avoid empty catch blocks that swallow critical errors (e.g., SSR hydration mismatches). Log the error before rendering a fallback UI.",
+      "engine": "ast-grep",
+      "severity": "warning",
+      "pattern": "",
+      "astGrepPattern": "try { $$$ } catch ($) {}",
+      "compiledAt": "2026-03-28T17:46:56.824Z",
+      "createdAt": "2026-03-28T17:46:56.824Z",
+      "fileGlobs": [
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.js",
+        "**/*.jsx"
+      ]
+    },
+    {
+      "lessonHash": "b906253dc077bf3a",
+      "lessonHeading": "Hook rules violation inside memoization callbacks",
+      "message": "Do not call hooks (e.g., useState, useContext) inside a useMemo or useCallback callback. This violates the rules of hooks.",
+      "engine": "ast-grep",
+      "severity": "warning",
+      "pattern": "",
+      "astGrepPattern": "$MEMO_FN(() => { $$$ use$HOOK($$$) $$$ })",
+      "compiledAt": "2026-03-28T17:47:57.154Z",
+      "createdAt": "2026-03-28T17:47:57.154Z",
+      "fileGlobs": [
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.js",
+        "**/*.jsx"
+      ]
     }
   ],
-  "nonCompilable": []
+  "nonCompilable": [
+    "c308710ca3d02af5",
+    "e61d1aae7b7a84b8",
+    "ff14fb5608cb215d",
+    "eef6647a59611fee",
+    "6274dc0f836ef24a",
+    "c3d4b263265dabbf",
+    "0eb316a6ccf756fe",
+    "32ddae57758da832",
+    "0d8b84cdbd81ac7f",
+    "34d4f9605e97c45c",
+    "c669f3dd0b894b02",
+    "39f0a4bc76f85795",
+    "4517d55cce6e0c5a",
+    "6172866282d2fe34",
+    "e1e7feac0b37ef7e",
+    "942b3675871f3e56",
+    "d2b906fe0d215594",
+    "4db35ae7a0c7a01c",
+    "83d2a72c7c1a6ce9",
+    "6d0d324379198d02",
+    "4ff5f652d6550e3f",
+    "3d0d954bd783b5e1",
+    "5b44a6c60a349284",
+    "cc9fcf96846a8511",
+    "47dc900cdb964bda",
+    "88a28b0f2701dae7",
+    "6e3950ea38bff7e7",
+    "9de1322c8f432d6f",
+    "bab302d0bb92d03a",
+    "83cea2f86b1b098f",
+    "5517fb1779dbccfe",
+    "c7e84f4f9051bad7",
+    "479d72b113657125",
+    "770a987a4d0c92e3",
+    "2718e7d9625c1ec7",
+    "98977f94c7e116c2",
+    "7ef919a546a9159a",
+    "136d4c012de026af",
+    "5f1d45714d3607b3",
+    "62765db12d5d3b19",
+    "b0db9b6d5e5475c1",
+    "f1ee319b9bb410c3",
+    "ddc06462c409ffa6"
+  ]
 }
