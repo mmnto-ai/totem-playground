@@ -15,7 +15,7 @@ echo ""
 
 # ─── Test 1: totem lint catches violations ───────────
 echo "[1/3] Running totem lint (expecting failures)..."
-LINT_OUTPUT=$(npx @mmnto/cli lint 2>&1) || true
+LINT_OUTPUT=$(pnpm exec totem lint 2>&1) || true
 
 # Check each violation type was caught
 echo "$LINT_OUTPUT" | grep -q "process.env" && pass "Rule 1: process.env access detected" || fail "Rule 1: process.env access NOT detected"
