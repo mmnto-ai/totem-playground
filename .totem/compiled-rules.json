@@ -249,49 +249,53 @@
     {
       "lessonHash": "2f7aa7e2ece39f0c",
       "lessonHeading": "Type assertions (as) bypass safety checks",
+      "pattern": "\\bas\\s+(any|unknown\\s+as)\\b",
       "message": "Type assertions with 'as any' or 'as unknown as' bypass type safety. Use type guards or schema validation instead.",
       "engine": "regex",
-      "severity": "warning",
-      "pattern": "\\bas\\s+(any|unknown\\s+as)\\b",
       "compiledAt": "2026-03-28T17:46:48.131Z",
       "createdAt": "2026-03-28T17:46:48.131Z",
       "fileGlobs": [
         "**/*.ts",
         "**/*.tsx"
-      ]
+      ],
+      "severity": "warning"
     },
     {
       "lessonHash": "6c7c1e94506dc7ee",
       "lessonHeading": "Swallowing critical errors during SSR",
-      "message": "Avoid empty catch blocks that swallow critical errors (e.g., SSR hydration mismatches). Log the error before rendering a fallback UI.",
-      "engine": "ast-grep",
+      "message": "Do not use empty catch blocks. SSR/Hydration errors should be explicitly logged before rendering a fallback UI.",
+      "engine": "ast",
       "severity": "warning",
       "pattern": "",
-      "astGrepPattern": "try { $$$ } catch ($) {}",
-      "compiledAt": "2026-03-28T17:46:56.824Z",
-      "createdAt": "2026-03-28T17:46:56.824Z",
+      "astQuery": "(catch_clause body: (statement_block) @body (#eq? @body \"{}\")) @violation",
+      "compiledAt": "2026-03-29T01:35:30.896Z",
+      "createdAt": "2026-03-29T01:35:30.896Z",
       "fileGlobs": [
+        "**/*.js",
+        "**/*.jsx",
         "**/*.ts",
         "**/*.tsx",
-        "**/*.js",
-        "**/*.jsx"
+        "!**/*.test.js",
+        "!**/*.test.jsx",
+        "!**/*.test.ts",
+        "!**/*.test.tsx"
       ]
     },
     {
       "lessonHash": "b906253dc077bf3a",
       "lessonHeading": "Hook rules violation inside memoization callbacks",
-      "message": "Do not call hooks (e.g., useState, useContext) inside a useMemo or useCallback callback. This violates the rules of hooks.",
+      "message": "Do not call React Hooks inside useMemo, useCallback, or React.memo callbacks. This breaks the rules of hooks. Move the hook call to the component body and pass its return value as a dependency.",
       "engine": "ast-grep",
       "severity": "warning",
       "pattern": "",
-      "astGrepPattern": "$MEMO_FN(() => { $$$ use$HOOK($$$) $$$ })",
-      "compiledAt": "2026-03-28T17:47:57.154Z",
-      "createdAt": "2026-03-28T17:47:57.154Z",
+      "astGrepPattern": "{ any: [ { pattern: 'useMemo(($$$) => { $$$ use$HOOK($$$) $$$ }, $$$)' }, { pattern: 'useCallback(($$$) => { $$$ use$HOOK($$$) $$$ }, $$$)' }, { pattern: 'React.memo(($$$) => { $$$ use$HOOK($$$) $$$ }, $$$)' } ] }",
+      "compiledAt": "2026-03-29T01:36:06.879Z",
+      "createdAt": "2026-03-29T01:36:06.879Z",
       "fileGlobs": [
-        "**/*.ts",
-        "**/*.tsx",
         "**/*.js",
-        "**/*.jsx"
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx"
       ]
     }
   ],
