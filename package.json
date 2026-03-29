@@ -13,8 +13,10 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
+    "@mmnto/cli": "^1.6.1",
+    "@mmnto/totem": "^1.6.1",
     "@types/node": "^22.0.0",
-    "@types/react": "^19.0.0"
+    "@types/react": "^19.0.0",
+    "typescript": "^5.0.0"
   }
 }
