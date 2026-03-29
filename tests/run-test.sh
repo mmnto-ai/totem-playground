@@ -52,11 +52,23 @@ echo "[4/6] Resilience: Ghost AST rule..."
 cp "$RULES_FILE" "$RULES_FILE.bak"
 
 # Inject a ghost rule targeting a non-existent AST node type
-GHOST_RULE='{"lessonHash":"test-ghost-001","lessonHeading":"Ghost rule","pattern":"","message":"Ghost node test","engine":"ast","astQuery":"(nonexistent_phantom_node_type) @violation","compiledAt":"2026-01-01T00:00:00.000Z","createdAt":"2026-01-01T00:00:00.000Z","fileGlobs":["src/**/*.ts"],"severity":"error"}'
-sed -i "s/\"rules\": \[/\"rules\": [$GHOST_RULE,/" "$RULES_FILE"
+node -e "
+  const fs = require('fs');
+  const d = JSON.parse(fs.readFileSync('$RULES_FILE', 'utf8'));
+  d.rules.unshift({
+    lessonHash: 'test-ghost-001', lessonHeading: 'Ghost rule',
+    pattern: '', message: 'Ghost node test', engine: 'ast',
+    astQuery: '(nonexistent_phantom_node_type) @violation',
+    compiledAt: '2026-01-01T00:00:00.000Z', createdAt: '2026-01-01T00:00:00.000Z',
+    fileGlobs: ['src/**/*.ts'], severity: 'error'
+  });
+  fs.writeFileSync('$RULES_FILE', JSON.stringify(d, null, 2));
+"
 
-GHOST_OUTPUT=$(pnpm exec totem lint 2>&1) || true
+set +e
+GHOST_OUTPUT=$(pnpm exec totem lint 2>&1)
 GHOST_EXIT=$?
+set -e
 
 # Lint should not crash (exit 0 or 1 for violations, not 2+)
 if [ "$GHOST_EXIT" -le 1 ]; then
@@ -79,11 +91,22 @@ echo "[5/6] Resilience: Overly broad regex..."
 cp "$RULES_FILE" "$RULES_FILE.bak"
 
 # Inject a rule that matches any line containing a letter
-BROAD_RULE='{"lessonHash":"test-broad-001","lessonHeading":"Broad rule","pattern":"[a-zA-Z]","message":"BROAD TEST","engine":"regex","compiledAt":"2026-01-01T00:00:00.000Z","createdAt":"2026-01-01T00:00:00.000Z","fileGlobs":["src/**/*.ts"],"severity":"warning"}'
-sed -i "s/\"rules\": \[/\"rules\": [$BROAD_RULE,/" "$RULES_FILE"
+node -e "
+  const fs = require('fs');
+  const d = JSON.parse(fs.readFileSync('$RULES_FILE', 'utf8'));
+  d.rules.unshift({
+    lessonHash: 'test-broad-001', lessonHeading: 'Broad rule',
+    pattern: '[a-zA-Z]', message: 'BROAD TEST', engine: 'regex',
+    compiledAt: '2026-01-01T00:00:00.000Z', createdAt: '2026-01-01T00:00:00.000Z',
+    fileGlobs: ['src/**/*.ts'], severity: 'warning'
+  });
+  fs.writeFileSync('$RULES_FILE', JSON.stringify(d, null, 2));
+"
 
-BROAD_OUTPUT=$(pnpm exec totem lint 2>&1) || true
+set +e
+BROAD_OUTPUT=$(pnpm exec totem lint 2>&1)
 BROAD_EXIT=$?
+set -e
 
 # Lint should complete without crashing
 if [ "$BROAD_EXIT" -le 1 ]; then
@@ -92,10 +115,15 @@ else
   fail "Broad regex: lint crashed (exit $BROAD_EXIT)"
 fi
 
-# The broad rule should fire on diff lines
-echo "$BROAD_OUTPUT" | grep -q "BROAD TEST" \
-  && pass "Broad regex: violations detected (diff-scoped)" \
-  || fail "Broad regex: no violations from broad rule"
+# The broad rule should fire on diff lines, but be bounded by diff-scoping
+BROAD_HITS=$(echo "$BROAD_OUTPUT" | grep -c "BROAD TEST" || true)
+if [ "$BROAD_HITS" -gt 0 ] && [ "$BROAD_HITS" -le 50 ]; then
+  pass "Broad regex: $BROAD_HITS violations (diff-scoped, bounded)"
+elif [ "$BROAD_HITS" -gt 50 ]; then
+  fail "Broad regex: $BROAD_HITS violations (not diff-scoped — too many)"
+else
+  fail "Broad regex: no violations from broad rule"
+fi
 
 cp "$RULES_FILE.bak" "$RULES_FILE"
 rm -f "$RULES_FILE.bak"
@@ -107,8 +135,10 @@ echo "[6/6] Resilience: Corrupt exemptions.json..."
 # Write invalid JSON
 echo '{ this is not valid json!!!' > .totem/exemptions.json
 
-EXEMPT_OUTPUT=$(pnpm exec totem lint 2>&1) || true
+set +e
+EXEMPT_OUTPUT=$(pnpm exec totem lint 2>&1)
 EXEMPT_EXIT=$?
+set -e
 
 # Lint should complete — it ignores exemptions
 if [ "$EXEMPT_EXIT" -le 1 ]; then
