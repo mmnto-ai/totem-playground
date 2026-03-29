@@ -261,15 +261,32 @@
       ]
     },
     {
-      "lessonHash": "6c7c1e94506dc7ee",
-      "lessonHeading": "Swallowing critical errors during SSR",
-      "message": "Avoid empty catch blocks that swallow critical errors (e.g., SSR hydration mismatches). Log the error before rendering a fallback UI.",
-      "engine": "ast-grep",
+      "lessonHash": "curated-pg-001",
+      "lessonHeading": "Use a validated config schema instead of direct process.env access",
+      "message": "Direct access to process.env is discouraged. Use a validated environment schema (e.g., with Zod) to prevent runtime errors from missing variables.",
+      "engine": "regex",
       "severity": "warning",
-      "pattern": "",
-      "astGrepPattern": "try { $$$ } catch ($) {}",
-      "compiledAt": "2026-03-28T17:46:56.824Z",
-      "createdAt": "2026-03-28T17:46:56.824Z",
+      "pattern": "process\\.env(\\[|\\.)\\s*['\"]?\\w+",
+      "compiledAt": "2026-03-28T18:00:00.000Z",
+      "createdAt": "2026-03-28T18:00:00.000Z",
+      "fileGlobs": [
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.js",
+        "**/*.jsx",
+        "!**/*.test.ts",
+        "!**/*.config.ts"
+      ]
+    },
+    {
+      "lessonHash": "curated-pg-002",
+      "lessonHeading": "Never swallow errors with empty catch blocks",
+      "message": "Empty catch blocks swallow errors. At a minimum, log the error or add a comment explaining why it is safe to ignore.",
+      "engine": "regex",
+      "severity": "warning",
+      "pattern": "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}",
+      "compiledAt": "2026-03-28T18:00:00.000Z",
+      "createdAt": "2026-03-28T18:00:00.000Z",
       "fileGlobs": [
         "**/*.ts",
         "**/*.tsx",
@@ -278,20 +295,64 @@
       ]
     },
     {
-      "lessonHash": "b906253dc077bf3a",
-      "lessonHeading": "Hook rules violation inside memoization callbacks",
-      "message": "Do not call hooks (e.g., useState, useContext) inside a useMemo or useCallback callback. This violates the rules of hooks.",
-      "engine": "ast-grep",
+      "lessonHash": "curated-pg-003",
+      "lessonHeading": "Use domain-specific error classes instead of raw throw new Error",
+      "message": "Replace raw throw new Error() with domain-specific error classes that carry typed error codes and recovery hints.",
+      "engine": "regex",
       "severity": "warning",
-      "pattern": "",
-      "astGrepPattern": "$MEMO_FN(() => { $$$ use$HOOK($$$) $$$ })",
-      "compiledAt": "2026-03-28T17:47:57.154Z",
-      "createdAt": "2026-03-28T17:47:57.154Z",
+      "pattern": "throw\\s+new\\s+Error\\s*\\(",
+      "compiledAt": "2026-03-28T18:00:00.000Z",
+      "createdAt": "2026-03-28T18:00:00.000Z",
       "fileGlobs": [
         "**/*.ts",
         "**/*.tsx",
         "**/*.js",
         "**/*.jsx"
+      ]
+    },
+    {
+      "lessonHash": "curated-pg-004",
+      "lessonHeading": "Use structured logging instead of console.log in API routes",
+      "message": "Replace console.log calls in API route handlers with a structured logger that attaches request IDs and log levels.",
+      "engine": "regex",
+      "severity": "warning",
+      "pattern": "console\\.(log|warn|info|debug)\\s*\\(",
+      "compiledAt": "2026-03-28T18:00:00.000Z",
+      "createdAt": "2026-03-28T18:00:00.000Z",
+      "fileGlobs": [
+        "**/api/**/*.ts",
+        "**/api/**/*.js"
+      ]
+    },
+    {
+      "lessonHash": "curated-pg-005",
+      "lessonHeading": "Never build SQL queries with string concatenation",
+      "message": "Never construct SQL queries by concatenating user input. Use parameterized queries or an ORM to prevent SQL injection.",
+      "engine": "regex",
+      "severity": "warning",
+      "pattern": "(SELECT|INSERT|UPDATE|DELETE)\\s+.*(\\+|\\$\\{)",
+      "compiledAt": "2026-03-28T18:00:00.000Z",
+      "createdAt": "2026-03-28T18:00:00.000Z",
+      "fileGlobs": [
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.js",
+        "**/*.jsx"
+      ]
+    },
+    {
+      "lessonHash": "curated-pg-006",
+      "lessonHeading": "Never use explicit any type annotations in application code",
+      "message": "Avoid using the 'any' type annotation. Use 'unknown' for untyped values, or define proper interfaces.",
+      "engine": "regex",
+      "severity": "warning",
+      "pattern": ":\\s*any\\b",
+      "compiledAt": "2026-03-28T18:00:00.000Z",
+      "createdAt": "2026-03-28T18:00:00.000Z",
+      "fileGlobs": [
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/*.d.ts"
       ]
     }
   ],

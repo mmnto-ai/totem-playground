@@ -11,7 +11,7 @@ export async function GET(request: Request) {
 
   try {
     const url = new URL(request.url);
-    const name = url.searchParams.get('name') ?? '';
+    const name: any = url.searchParams.get('name') ?? '';
     const query = "SELECT * FROM users WHERE name = '" + name + "'";
 
     const users = [{ id: 1, name: 'Alice' }];

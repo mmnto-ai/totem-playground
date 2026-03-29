@@ -1,6 +1,6 @@
 const JWT_SECRET = process.env['JWT_SECRET'];
 
-export function verifyToken(token: string): boolean {
+export function verifyToken(token: any): boolean {
   try {
     if (!JWT_SECRET) {
       throw new Error('JWT_SECRET not configured');
