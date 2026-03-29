@@ -7,6 +7,8 @@ FAIL=0
 pass() { echo "  ✓ $1"; PASS=$((PASS + 1)); }
 fail() { echo "  ✗ $1"; FAIL=$((FAIL + 1)); }
 
+RULES_FILE=".totem/compiled-rules.json"
+
 echo "═══════════════════════════════════════════"
 echo "  Totem Playground Regression Test"
 echo "  Node: $(node --version)"
@@ -14,7 +16,7 @@ echo "════════════════════════�
 echo ""
 
 # ─── Test 1: totem lint catches violations ───────────
-echo "[1/3] Running totem lint (expecting failures)..."
+echo "[1/6] Running totem lint (expecting failures)..."
 LINT_OUTPUT=$(pnpm exec totem lint 2>&1) || true
 
 # Check each violation type was caught
@@ -34,15 +36,118 @@ fi
 echo ""
 
 # ─── Test 2: Violation output has actionable guidance ─
-echo "[2/3] Checking output quality..."
+echo "[2/6] Checking output quality..."
 echo "$LINT_OUTPUT" | grep -q "validated config schema" && pass "Fix guidance: config schema mentioned" || fail "Fix guidance: config schema NOT mentioned"
 echo "$LINT_OUTPUT" | grep -q "parameterized queries" && pass "Fix guidance: parameterized queries mentioned" || fail "Fix guidance: parameterized queries NOT mentioned"
 echo "$LINT_OUTPUT" | grep -q "structured logger" && pass "Fix guidance: structured logger mentioned" || fail "Fix guidance: structured logger NOT mentioned"
 echo ""
 
 # ─── Test 3: File + line numbers present ─────────────
-echo "[3/3] Checking violation formatting..."
+echo "[3/6] Checking violation formatting..."
 echo "$LINT_OUTPUT" | grep -qE "src/.*\.ts:[0-9]+" && pass "Violations include file:line format" || fail "Violations missing file:line format"
+echo ""
+
+# ─── Test 4: Ghost AST rule (resilience) ─────────────
+echo "[4/6] Resilience: Ghost AST rule..."
+cp "$RULES_FILE" "$RULES_FILE.bak"
+
+# Inject a ghost rule targeting a non-existent AST node type
+node -e "
+  const fs = require('fs');
+  const d = JSON.parse(fs.readFileSync('$RULES_FILE', 'utf8'));
+  d.rules.unshift({
+    lessonHash: 'test-ghost-001', lessonHeading: 'Ghost rule',
+    pattern: '', message: 'Ghost node test', engine: 'ast',
+    astQuery: '(nonexistent_phantom_node_type) @violation',
+    compiledAt: '2026-01-01T00:00:00.000Z', createdAt: '2026-01-01T00:00:00.000Z',
+    fileGlobs: ['src/**/*.ts'], severity: 'error'
+  });
+  fs.writeFileSync('$RULES_FILE', JSON.stringify(d, null, 2));
+"
+
+set +e
+GHOST_OUTPUT=$(pnpm exec totem lint 2>&1)
+GHOST_EXIT=$?
+set -e
+
+# Lint should not crash (exit 0 or 1 for violations, not 2+)
+if [ "$GHOST_EXIT" -le 1 ]; then
+  pass "Ghost rule: lint did not crash (exit $GHOST_EXIT)"
+else
+  fail "Ghost rule: lint crashed (exit $GHOST_EXIT)"
+fi
+
+# Should warn about the bad node name
+echo "$GHOST_OUTPUT" | grep -qi "nonexistent_phantom_node_type\|bad node name\|skipped" \
+  && pass "Ghost rule: warning emitted for invalid AST node" \
+  || fail "Ghost rule: no warning for invalid AST node"
+
+cp "$RULES_FILE.bak" "$RULES_FILE"
+rm -f "$RULES_FILE.bak"
+echo ""
+
+# ─── Test 5: Overly broad regex (resilience) ─────────
+echo "[5/6] Resilience: Overly broad regex..."
+cp "$RULES_FILE" "$RULES_FILE.bak"
+
+# Inject a rule that matches any line containing a letter
+node -e "
+  const fs = require('fs');
+  const d = JSON.parse(fs.readFileSync('$RULES_FILE', 'utf8'));
+  d.rules.unshift({
+    lessonHash: 'test-broad-001', lessonHeading: 'Broad rule',
+    pattern: '[a-zA-Z]', message: 'BROAD TEST', engine: 'regex',
+    compiledAt: '2026-01-01T00:00:00.000Z', createdAt: '2026-01-01T00:00:00.000Z',
+    fileGlobs: ['src/**/*.ts'], severity: 'warning'
+  });
+  fs.writeFileSync('$RULES_FILE', JSON.stringify(d, null, 2));
+"
+
+set +e
+BROAD_OUTPUT=$(pnpm exec totem lint 2>&1)
+BROAD_EXIT=$?
+set -e
+
+# Lint should complete without crashing
+if [ "$BROAD_EXIT" -le 1 ]; then
+  pass "Broad regex: lint completed (exit $BROAD_EXIT)"
+else
+  fail "Broad regex: lint crashed (exit $BROAD_EXIT)"
+fi
+
+# The broad rule should fire on diff lines, but be bounded by diff-scoping
+BROAD_HITS=$(echo "$BROAD_OUTPUT" | grep -c "BROAD TEST" || true)
+if [ "$BROAD_HITS" -gt 0 ] && [ "$BROAD_HITS" -le 50 ]; then
+  pass "Broad regex: $BROAD_HITS violations (diff-scoped, bounded)"
+elif [ "$BROAD_HITS" -gt 50 ]; then
+  fail "Broad regex: $BROAD_HITS violations (not diff-scoped — too many)"
+else
+  fail "Broad regex: no violations from broad rule"
+fi
+
+cp "$RULES_FILE.bak" "$RULES_FILE"
+rm -f "$RULES_FILE.bak"
+echo ""
+
+# ─── Test 6: Corrupt exemption state (resilience) ────
+echo "[6/6] Resilience: Corrupt exemptions.json..."
+
+# Write invalid JSON
+echo '{ this is not valid json!!!' > .totem/exemptions.json
+
+set +e
+EXEMPT_OUTPUT=$(pnpm exec totem lint 2>&1)
+EXEMPT_EXIT=$?
+set -e
+
+# Lint should complete — it ignores exemptions
+if [ "$EXEMPT_EXIT" -le 1 ]; then
+  pass "Corrupt exemptions: lint completed (exit $EXEMPT_EXIT)"
+else
+  fail "Corrupt exemptions: lint crashed (exit $EXEMPT_EXIT)"
+fi
+
+rm -f .totem/exemptions.json
 echo ""
 
 # ─── Summary ─────────────────────────────────────────
