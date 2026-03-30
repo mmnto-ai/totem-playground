@@ -28,8 +28,8 @@ COPY src/lib/ /app/src/lib/
 COPY src/middleware/ /app/src/middleware/
 RUN git add src/
 
-# Copy and run test script
+# Copy and run test script (sed strips Windows CRLF from build context)
 COPY tests/run-test.sh /app/tests/run-test.sh
-RUN chmod +x /app/tests/run-test.sh
+RUN sed -i 's/\r$//' /app/tests/run-test.sh && chmod +x /app/tests/run-test.sh
 
 ENTRYPOINT ["/app/tests/run-test.sh"]
