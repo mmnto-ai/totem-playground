@@ -17,11 +17,11 @@ dependencies:
 
 devDependencies:
   '@mmnto/cli':
-    specifier: ^1.6.1
-    version: 1.6.1
+    specifier: ^1.7.0
+    version: 1.7.0
   '@mmnto/totem':
-    specifier: ^1.6.1
-    version: 1.6.1
+    specifier: ^1.7.0
+    version: 1.7.0
   '@types/node':
     specifier: ^22.0.0
     version: 22.19.15
@@ -473,8 +473,8 @@ packages:
       '@lancedb/lancedb-win32-x64-msvc': 0.26.2
     dev: true
 
-  /@mmnto/cli@1.6.1:
-    resolution: {integrity: sha512-ehuam71vWJhIt+Vfoq8HZqCWjxbE/L3aZ5j+nP5XlJsxZS6vwWUDPSXVHeaAx84g1p/HNQyr4WSIfi5AhOgZGw==}
+  /@mmnto/cli@1.7.0:
+    resolution: {integrity: sha512-Kn1DDrQ+n7a6xijAtIZrZ9dyjzLXsn6zLTDK68CW85EU5qWxx8QqgAWCr5CKAvqa6Sr9ekYoZotmu2Pf+LFvdw==}
     hasBin: true
     peerDependencies:
       '@anthropic-ai/sdk': '>=0.50.0'
@@ -489,7 +489,7 @@ packages:
         optional: true
     dependencies:
       '@clack/prompts': 1.1.0
-      '@mmnto/totem': 1.6.1
+      '@mmnto/totem': 1.7.0
       commander: 13.1.0
       jiti: 2.6.1
       ora: 9.3.0
@@ -504,8 +504,8 @@ packages:
       - ws
     dev: true
 
-  /@mmnto/totem@1.6.1:
-    resolution: {integrity: sha512-TIruCCfEb+/INxJ6wGigbPBqscJYBdxORlR1MrdoQ770A2P+4Gj1VPGP/d2/YtqvZWLtJuiOyyz8bVNFdETW2w==}
+  /@mmnto/totem@1.7.0:
+    resolution: {integrity: sha512-VGyes8I/UcMjoklpXFrckOQVGz8xcHNOB4eG62WPN4E7H+gVMLYWo21X61PU1pemxlUa1PCDg7lZ32b1rIK9Jw==}
     peerDependencies:
       '@google/genai': '>=1.0.0'
     peerDependenciesMeta:

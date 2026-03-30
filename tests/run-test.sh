@@ -26,12 +26,14 @@ echo "$LINT_OUTPUT" | grep -q "throw new Error" && pass "Rule 3: raw Error throw
 echo "$LINT_OUTPUT" | grep -q "console.log" && pass "Rule 4: console.log in API detected" || fail "Rule 4: console.log in API NOT detected"
 echo "$LINT_OUTPUT" | grep -q "SQL" && pass "Rule 5: SQL concatenation detected" || fail "Rule 5: SQL concatenation NOT detected"
 
-# Check total violation count
-ERRORS=$(echo "$LINT_OUTPUT" | grep -o '[0-9]* error(s)' | head -1 | grep -o '[0-9]*')
-if [ "${ERRORS:-0}" -ge 10 ]; then
-  pass "Total violations: $ERRORS (expected 11)"
+# Check total violation count (warnings + errors)
+WARNINGS=$(echo "$LINT_OUTPUT" | grep -o '[0-9]* warning(s)' | head -1 | grep -o '[0-9]*' || true)
+ERRORS=$(echo "$LINT_OUTPUT" | grep -o '[0-9]* error(s)' | head -1 | grep -o '[0-9]*' || true)
+TOTAL=$(( ${WARNINGS:-0} + ${ERRORS:-0} ))
+if [ "$TOTAL" -ge 14 ]; then
+  pass "Total violations: $TOTAL (expected ≥14)"
 else
-  fail "Total violations: ${ERRORS:-0} (expected 11)"
+  fail "Total violations: $TOTAL (expected ≥14)"
 fi
 echo ""
 
