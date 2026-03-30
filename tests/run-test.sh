@@ -30,10 +30,10 @@ echo "$LINT_OUTPUT" | grep -q "SQL" && pass "Rule 5: SQL concatenation detected"
 WARNINGS=$(echo "$LINT_OUTPUT" | grep -o '[0-9]* warning(s)' | head -1 | grep -o '[0-9]*' || true)
 ERRORS=$(echo "$LINT_OUTPUT" | grep -o '[0-9]* error(s)' | head -1 | grep -o '[0-9]*' || true)
 TOTAL=$(( ${WARNINGS:-0} + ${ERRORS:-0} ))
-if [ "$TOTAL" -ge 10 ]; then
-  pass "Total violations: $TOTAL (expected ≥10)"
+if [ "$TOTAL" -ge 14 ]; then
+  pass "Total violations: $TOTAL (expected ≥14)"
 else
-  fail "Total violations: $TOTAL (expected ≥10)"
+  fail "Total violations: $TOTAL (expected ≥14)"
 fi
 echo ""
 
