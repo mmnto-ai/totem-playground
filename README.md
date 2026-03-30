@@ -22,6 +22,24 @@ npx @mmnto/cli lint
 
 No API keys needed. No config. Just clone and lint.
 
+### Explore with the noun-verb CLI (v1.7.0)
+
+Commands are now grouped: **Core** (`lint`, `review`, `check`), **Entities** (`rule`, `lesson`, `exemption`), **Workflow** (`wrap`, `triage`), and **Setup** (`init`, `sync`, `hooks`). Run `totem --help` to see the full map.
+
+```bash
+totem rule list            # show all compiled rules
+totem lesson list          # show indexed lessons
+totem status               # project health at a glance
+```
+
+### Scriptable API
+
+Every entity command accepts `--json` for machine-readable output:
+
+```bash
+totem rule list --json | jq '.data.rules[0].severity'
+```
+
 ## The 5 Violations
 
 | # | Violation | Where | Why it matters |
@@ -43,7 +61,7 @@ This repository also serves as the validation harness for Totem's runtime resili
 
 ## Fix Them
 
-Fix the violations, run `npx @mmnto/cli lint` again, and watch it pass.
+Fix the violations, run `totem lint` again, and watch it pass.
 
 Or better: point your AI agent at this repo and tell it to fix everything. See how many push-reject cycles it takes.
 
