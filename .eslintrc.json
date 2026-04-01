@@ -1,0 +1,42 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-eval": "error",
+    "no-restricted-globals": [
+      "error",
+      {
+        "name": "event",
+        "message": "Use local event parameters instead of the implicit global 'event' object."
+      },
+      {
+        "name": "fdescribe",
+        "message": "Do not commit focused test suites."
+      }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "moment",
+            "message": "Use date-fns or Temporal instead of moment (63 kB gzipped)."
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["lodash/*"],
+            "message": "Import from 'lodash-es' for tree-shaking support."
+          }
+        ]
+      }
+    ]
+  }
+}

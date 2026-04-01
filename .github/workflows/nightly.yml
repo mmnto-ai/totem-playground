@@ -1,0 +1,42 @@
+name: Nightly E2E
+
+on:
+  schedule:
+    - cron: '15 4 * * *'   # 04:15 UTC daily
+  workflow_dispatch:        # manual trigger
+  repository_dispatch:      # cross-repo trigger (stretch goal)
+    types: [totem-release]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install latest @mmnto packages
+        run: npm install --no-save @mmnto/cli@latest @mmnto/totem@latest
+
+      # ── Entity / import tests (no git state needed) ──
+      - name: Run entity & import tests
+        run: node --test tests/e2e.test.mjs
+
+      # ── Lint / resilience tests (need staged violations) ──
+      - name: Prepare baseline for lint tests
+        run: |
+          git config user.email "ci@totem.test"
+          git config user.name  "CI"
+          bash tests/setup-baseline.sh
+
+      - name: Run lint & resilience tests
+        env:
+          TOTEM_E2E_LINT: '1'
+        run: node --test tests/e2e.test.mjs

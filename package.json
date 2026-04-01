@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "node --test tests/e2e.test.mjs",
+    "test:lint": "echo 'Requires setup-baseline.sh first (destructive — CI only). Set TOTEM_E2E_FORCE=1 to run locally.' && TOTEM_E2E_LINT=1 node --test tests/e2e.test.mjs"
   },
   "dependencies": {
     "next": "^15.0.0",
@@ -13,8 +15,9 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@mmnto/cli": "^1.7.0",
-    "@mmnto/totem": "^1.7.0",
+    "@google/genai": "^1.48.0",
+    "@mmnto/cli": "^1.8.5",
+    "@mmnto/totem": "^1.8.5",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "typescript": "^5.0.0"

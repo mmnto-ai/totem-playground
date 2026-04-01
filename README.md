@@ -1,6 +1,6 @@
 # Totem Playground
 
-A broken Next.js app with 5 intentional architectural violations. [Totem](https://github.com/mmnto-ai/totem) catches all of them.
+A broken Next.js app with 5 intentional architectural violations. [Totem](https://github.com/mmnto-ai/totem) catches all of them — and now you can create your own rules too.
 
 ## Try It In Your Browser
 
@@ -22,24 +22,6 @@ npx @mmnto/cli lint
 
 No API keys needed. No config. Just clone and lint.
 
-### Explore with the noun-verb CLI (v1.7.0)
-
-Commands are now grouped: **Core** (`lint`, `review`, `check`), **Entities** (`rule`, `lesson`, `exemption`), **Workflow** (`wrap`, `triage`), and **Setup** (`init`, `sync`, `hooks`). Run `totem --help` to see the full map.
-
-```bash
-totem rule list            # show all compiled rules
-totem lesson list          # show indexed lessons
-totem status               # project health at a glance
-```
-
-### Scriptable API
-
-Every entity command accepts `--json` for machine-readable output:
-
-```bash
-totem rule list --json | jq '.data.rules[0].severity'
-```
-
 ## The 5 Violations
 
 | # | Violation | Where | Why it matters |
@@ -47,8 +29,83 @@ totem rule list --json | jq '.data.rules[0].severity'
 | 1 | Direct `process.env` access | API routes, middleware, db.ts | Missing env vars crash at runtime instead of startup |
 | 2 | Empty `catch(e) {}` blocks | users/route.ts, auth.ts | Errors vanish silently — impossible to debug |
 | 3 | Raw `throw new Error()` | auth/route.ts, auth.ts | No error classification, no recovery hints |
-| 4 | `console.log` in API routes | users/route.ts | Loses context in production, no request IDs |   
+| 4 | `console.log` in API routes | users/route.ts | Loses context in production, no request IDs |
 | 5 | SQL string concatenation | users/route.ts, db.ts | SQL injection — the oldest vulnerability in the book |
+
+## Pipeline Engine: Create Rules, Not Just Enforce Them
+
+Totem 1.8 introduces the **Pipeline Engine** — 5 pipelines for turning governance knowledge into compiled rules. This playground demos the zero-LLM import pipeline (P4) and walks through the manual authoring pipeline (P1, which requires an LLM key for the compile step):
+
+### P4 — Import from ESLint
+
+Already have ESLint rules? Import them directly:
+
+```bash
+# Preview what will be imported
+totem import --from-eslint .eslintrc.json --dry-run
+
+# Import for real
+totem import --from-eslint .eslintrc.json
+
+# See the new rules alongside existing ones
+totem rule list
+```
+
+The included `.eslintrc.json` has 4 importable rules (restricted globals, restricted imports) and 1 that gets skipped with an explanation (AST-based `no-eval` can't be converted to regex). This is intentional — Totem is honest about what it can and can't import.
+
+### P1 — Manual Rule Authoring
+
+Write a lesson in Markdown, compile it into a rule, then test-drive it:
+
+```bash
+# 1. Add a lesson to project memory
+totem lesson add "Never leave TODO comments in production code. \
+  Resolve them before merging to main — they indicate unfinished work \
+  that will be forgotten."
+
+# 2. Compile lessons into enforceable rules (requires LLM API key)
+totem lesson compile
+
+# 3. Scaffold a test fixture for the new rule and iterate
+totem rule scaffold <hash>
+totem test --filter <hash>
+```
+
+The authoring surface is markdown lessons, not compiled JSON — `lesson compile` handles the translation. You can inspect any existing rule's source lesson with `totem rule inspect <hash>`.
+
+### Other Pipelines (P2, P3, P5)
+
+Three more pipelines exist:
+
+| Pipeline | What it does | Requires |
+|----------|-------------|----------|
+| P2 — Review-to-Rule | Extracts rules from AI code review comments | LLM API key |
+| P3 — Lesson Compile | Compiles lesson narratives into enforceable rules | LLM API key (also used by P1's compile step) |
+| P5 — Observation | Auto-captures findings from review into reusable lessons | Zero-LLM at capture; LLM only if the review itself uses one |
+
+Set `GEMINI_API_KEY`, `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY` in your environment to try P1 compile, P2, or P3. See the [main Totem docs](https://github.com/mmnto-ai/totem) for details.
+
+## Explore with the CLI
+
+Commands are grouped: **Core** (`lint`, `review`, `check`, `spec`), **Entities** (`rule`, `lesson`, `exemption`, `config`), **Workflow** (`wrap`, `triage`, `triage-pr`), and **Setup** (`init`, `sync`, `hooks`, `doctor`, `status`). Run `totem --help` to see the full map.
+
+```bash
+totem rule list            # show all compiled rules
+totem rule list --json     # machine-readable output (pipe to jq)
+totem status               # project health at a glance
+totem doctor               # full workspace diagnostics
+totem describe             # governance scope: rules, lessons, tier, targets
+totem lint                 # run enforcement (zero LLM)
+```
+
+### Scriptable API
+
+Every entity command accepts `--json` for machine-readable output:
+
+```bash
+totem rule list --json | jq '.data.rules | length'
+totem rule inspect <hash>           # deep-dive on a single rule
+```
 
 ## Resilience Tests
 

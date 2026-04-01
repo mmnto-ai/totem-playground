@@ -17,7 +17,7 @@ echo ""
 
 # ─── Test 1: totem lint catches violations ───────────
 echo "[1/6] Running totem lint (expecting failures)..."
-LINT_OUTPUT=$(pnpm exec totem lint 2>&1) || true
+LINT_OUTPUT=$(npx @mmnto/cli lint 2>&1) || true
 
 # Check each violation type was caught
 echo "$LINT_OUTPUT" | grep -q "process.env" && pass "Rule 1: process.env access detected" || fail "Rule 1: process.env access NOT detected"
@@ -68,7 +68,7 @@ node -e "
 "
 
 set +e
-GHOST_OUTPUT=$(pnpm exec totem lint 2>&1)
+GHOST_OUTPUT=$(npx @mmnto/cli lint 2>&1)
 GHOST_EXIT=$?
 set -e
 
@@ -106,7 +106,7 @@ node -e "
 "
 
 set +e
-BROAD_OUTPUT=$(pnpm exec totem lint 2>&1)
+BROAD_OUTPUT=$(npx @mmnto/cli lint 2>&1)
 BROAD_EXIT=$?
 set -e
 
@@ -138,7 +138,7 @@ echo "[6/6] Resilience: Corrupt exemptions.json..."
 echo '{ this is not valid json!!!' > .totem/exemptions.json
 
 set +e
-EXEMPT_OUTPUT=$(pnpm exec totem lint 2>&1)
+EXEMPT_OUTPUT=$(npx @mmnto/cli lint 2>&1)
 EXEMPT_EXIT=$?
 set -e
 
