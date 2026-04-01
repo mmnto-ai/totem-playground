@@ -104,7 +104,7 @@ Every entity command accepts `--json` for machine-readable output:
 
 ```bash
 totem rule list --json | jq '.data.rules | length'
-totem rule inspect curated-pg-001   # deep-dive on a single rule
+totem rule inspect <hash>           # deep-dive on a single rule
 ```
 
 ## Resilience Tests

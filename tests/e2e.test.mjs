@@ -20,7 +20,7 @@ const LINT_ENABLED = process.env.TOTEM_E2E_LINT === '1';
  * Returns { stdout, stderr, output (merged), exitCode }.
  */
 function totem(args) {
-  const cmd = `npx totem ${args.join(' ')}`;
+  const cmd = `npx @mmnto/cli ${args.join(' ')}`;
   try {
     const stdout = execSync(cmd, {
       encoding: 'utf8',
@@ -42,7 +42,7 @@ function totem(args) {
 
 /** Run a totem command and merge stdout+stderr for pattern matching. */
 function totemMerged(args) {
-  const cmd = `npx totem ${args.join(' ')} 2>&1`;
+  const cmd = `npx @mmnto/cli ${args.join(' ')} 2>&1`;
   try {
     const output = execSync(cmd, {
       encoding: 'utf8',
