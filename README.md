@@ -55,29 +55,23 @@ The included `.eslintrc.json` has 3 importable rules (restricted globals, restri
 
 ### P1 — Manual Rule Authoring
 
-Write a rule by hand. Add an entry directly to `.totem/compiled-rules.json`:
-
-```jsonc
-{
-  "lessonHash": "my-custom-001",
-  "lessonHeading": "Ban TODO comments in production code",
-  "message": "Resolve TODO comments before merging to main.",
-  "engine": "regex",
-  "severity": "warning",
-  "pattern": "\\bTODO\\b",
-  "fileGlobs": ["**/*.ts", "**/*.tsx", "!**/*.test.*"]
-}
-```
-
-Or use `scaffold` to generate a test fixture for an existing rule and iterate with TDD:
+Write a lesson in markdown, compile it into a rule, then test-drive it:
 
 ```bash
-# Generate a test fixture skeleton
-totem rule scaffold curated-pg-001
+# 1. Add a lesson to project memory
+totem lesson add "Never leave TODO comments in production code. \
+  Resolve them before merging to main — they indicate unfinished work \
+  that will be forgotten."
 
-# Run it against the rule engine
-totem test --filter curated-pg-001
+# 2. Compile lessons into enforceable rules (requires LLM API key)
+totem lesson compile
+
+# 3. Scaffold a test fixture for the new rule and iterate
+totem rule scaffold <hash>
+totem test --filter <hash>
 ```
+
+The authoring surface is markdown lessons, not compiled JSON — `lesson compile` handles the translation. You can inspect any existing rule's source lesson with `totem rule inspect <hash>`.
 
 ### Other Pipelines (P2, P3, P5)
 
@@ -87,9 +81,9 @@ Three more pipelines exist but require an LLM API key:
 |----------|-------------|----------|
 | P2 — Review-to-Rule | Extracts rules from AI code review comments | LLM API key |
 | P3 — Lesson Compile | Compiles lesson narratives into enforceable rules | LLM API key |
-| P5 — Observation | Captures runtime patterns and promotes them to rules | LLM API key |
+| P5 — Observation | Auto-captures findings from review into reusable lessons | Zero-LLM at capture; LLM only if the review itself uses one |
 
-Set `GEMINI_API_KEY`, `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY` in your environment to try them. See the [main Totem docs](https://github.com/mmnto-ai/totem) for details.
+Set `GEMINI_API_KEY`, `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY` in your environment to try P2/P3. See the [main Totem docs](https://github.com/mmnto-ai/totem) for details.
 
 ## Explore with the CLI
 
