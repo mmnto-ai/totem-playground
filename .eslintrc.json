@@ -24,12 +24,18 @@
     "no-restricted-imports": [
       "error",
       {
-        "patterns": ["lodash/*"],
-        "message": "Import from 'lodash-es' for tree-shaking support."
-      },
-      {
-        "name": "moment",
-        "message": "Use date-fns or Temporal instead of moment (63 kB gzipped)."
+        "paths": [
+          {
+            "name": "moment",
+            "message": "Use date-fns or Temporal instead of moment (63 kB gzipped)."
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["lodash/*"],
+            "message": "Import from 'lodash-es' for tree-shaking support."
+          }
+        ]
       }
     ]
   }

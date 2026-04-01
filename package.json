@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "test": "node --test tests/e2e.test.mjs",
-    "test:lint": "TOTEM_E2E_LINT=1 node --test tests/e2e.test.mjs"
+    "test:lint": "echo 'Requires setup-baseline.sh first (destructive — CI only). Set TOTEM_E2E_FORCE=1 to run locally.' && TOTEM_E2E_LINT=1 node --test tests/e2e.test.mjs"
   },
   "dependencies": {
     "next": "^15.0.0",

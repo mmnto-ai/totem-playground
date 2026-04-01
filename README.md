@@ -34,7 +34,7 @@ No API keys needed. No config. Just clone and lint.
 
 ## Pipeline Engine: Create Rules, Not Just Enforce Them
 
-Totem 1.8 introduces the **Pipeline Engine** — 5 pipelines for turning governance knowledge into compiled rules. This playground demos the two that require zero LLM / zero API keys:
+Totem 1.8 introduces the **Pipeline Engine** — 5 pipelines for turning governance knowledge into compiled rules. This playground demos the zero-LLM import pipeline (P4) and walks through the manual authoring pipeline (P1, which requires an LLM key for the compile step):
 
 ### P4 — Import from ESLint
 
@@ -51,11 +51,11 @@ totem import --from-eslint .eslintrc.json
 totem rule list
 ```
 
-The included `.eslintrc.json` has 3 importable rules (restricted globals, restricted imports) and 1 that gets skipped with an explanation (AST-based `no-eval` can't be converted to regex). This is intentional — Totem is honest about what it can and can't import.
+The included `.eslintrc.json` has 4 importable rules (restricted globals, restricted imports) and 1 that gets skipped with an explanation (AST-based `no-eval` can't be converted to regex). This is intentional — Totem is honest about what it can and can't import.
 
 ### P1 — Manual Rule Authoring
 
-Write a lesson in markdown, compile it into a rule, then test-drive it:
+Write a lesson in Markdown, compile it into a rule, then test-drive it:
 
 ```bash
 # 1. Add a lesson to project memory
@@ -75,15 +75,15 @@ The authoring surface is markdown lessons, not compiled JSON — `lesson compile
 
 ### Other Pipelines (P2, P3, P5)
 
-Three more pipelines exist but require an LLM API key:
+Three more pipelines exist:
 
 | Pipeline | What it does | Requires |
 |----------|-------------|----------|
 | P2 — Review-to-Rule | Extracts rules from AI code review comments | LLM API key |
-| P3 — Lesson Compile | Compiles lesson narratives into enforceable rules | LLM API key |
+| P3 — Lesson Compile | Compiles lesson narratives into enforceable rules | LLM API key (also used by P1's compile step) |
 | P5 — Observation | Auto-captures findings from review into reusable lessons | Zero-LLM at capture; LLM only if the review itself uses one |
 
-Set `GEMINI_API_KEY`, `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY` in your environment to try P2/P3. See the [main Totem docs](https://github.com/mmnto-ai/totem) for details.
+Set `GEMINI_API_KEY`, `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY` in your environment to try P1 compile, P2, or P3. See the [main Totem docs](https://github.com/mmnto-ai/totem) for details.
 
 ## Explore with the CLI
 

@@ -9,7 +9,7 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { execSync } from 'node:child_process';
-import { readFileSync, writeFileSync, copyFileSync, unlinkSync } from 'node:fs';
+import { readFileSync, writeFileSync, copyFileSync, unlinkSync, existsSync } from 'node:fs';
 
 const RULES_FILE = '.totem/compiled-rules.json';
 const LINT_ENABLED = process.env.TOTEM_E2E_LINT === '1';
@@ -207,9 +207,11 @@ describe('Resilience: ghost AST rule', { skip: !LINT_ENABLED && 'TOTEM_E2E_LINT 
 
   after(() => { copyFileSync(backup, RULES_FILE); unlinkSync(backup); });
 
-  it('lint does not crash (exit ≤ 1)', () => {
-    const { exitCode } = totemMerged(['lint']);
+  it('lint does not crash and warns about invalid node', () => {
+    const { output, exitCode } = totemMerged(['lint']);
     assert.ok(exitCode <= 1, `Expected exit ≤1, got ${exitCode}`);
+    assert.match(output, /nonexistent_phantom_node_type|bad node|skipped/i,
+      'Should warn about the invalid AST node type');
   });
 });
 
@@ -250,12 +252,27 @@ describe('Resilience: overly broad regex', { skip: !LINT_ENABLED && 'TOTEM_E2E_L
 
 describe('Resilience: corrupt exemptions.json', { skip: !LINT_ENABLED && 'TOTEM_E2E_LINT not set' }, () => {
   const EXEMPTIONS = '.totem/exemptions.json';
+  const backup = EXEMPTIONS + '.e2e-bak';
+  let hadOriginal = false;
 
-  before(() => writeFileSync(EXEMPTIONS, '{ this is not valid json!!!'));
-  after(()  => { try { unlinkSync(EXEMPTIONS); } catch {} });
+  before(() => {
+    hadOriginal = existsSync(EXEMPTIONS);
+    if (hadOriginal) copyFileSync(EXEMPTIONS, backup);
+    writeFileSync(EXEMPTIONS, '{ this is not valid json!!!');
+  });
+  after(() => {
+    if (hadOriginal) {
+      copyFileSync(backup, EXEMPTIONS);
+      try { unlinkSync(backup); } catch {}
+    } else {
+      try { unlinkSync(EXEMPTIONS); } catch {}
+    }
+  });
 
-  it('lint completes despite malformed exemptions', () => {
-    const { exitCode } = totemMerged(['lint']);
+  it('lint completes and warns about malformed exemptions', () => {
+    const { output, exitCode } = totemMerged(['lint']);
     assert.ok(exitCode <= 1, `Expected exit ≤1, got ${exitCode}`);
+    assert.match(output, /exemptions|malformed|invalid|parse/i,
+      'Should warn about corrupt exemptions file');
   });
 });
