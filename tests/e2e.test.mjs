@@ -9,7 +9,9 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { execSync } from 'node:child_process';
-import { readFileSync, writeFileSync, copyFileSync, unlinkSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, copyFileSync, unlinkSync, existsSync, mkdtempSync, mkdirSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const RULES_FILE = '.totem/compiled-rules.json';
 const LINT_ENABLED = process.env.TOTEM_E2E_LINT === '1';
@@ -133,11 +135,58 @@ describe('totem hooks', () => {
     assert.match(output, /pre-commit/);
     assert.match(output, /pre-push/);
   });
+});
 
-  it('supports --strict tier flag', () => {
-    const { output, exitCode } = totemMerged(['hooks', '--strict', '--force']);
-    assert.equal(exitCode, 0);
+describe('totem hooks --strict (isolated temp repo)', () => {
+  let tempDir;
+
+  before(() => {
+    // Create an isolated repo so strict hooks never touch the user's
+    // working tree.  If the process is killed mid-test the only
+    // leftover is an orphan in the OS temp dir.
+    tempDir = mkdtempSync(join(tmpdir(), 'totem-hooks-'));
+    execSync('git init', { cwd: tempDir, stdio: 'ignore' });
+    execSync('git config user.email "test@totem.test"', { cwd: tempDir, stdio: 'ignore' });
+    execSync('git config user.name "Test"', { cwd: tempDir, stdio: 'ignore' });
+
+    // Minimal Totem scaffold so `hooks` has something to work with
+    writeFileSync(join(tempDir, 'totem.config.ts'),
+      'export default { targets: [] };\n');
+    mkdirSync(join(tempDir, '.totem'), { recursive: true });
+    writeFileSync(join(tempDir, '.totem', 'compiled-rules.json'),
+      JSON.stringify({ version: 1, rules: [], nonCompilable: [] }));
+  });
+
+  after(() => {
+    try { rmSync(tempDir, { recursive: true, force: true }); } catch {}
+  });
+
+  it('installs strict hooks', () => {
+    const output = execSync(
+      'npx @mmnto/cli hooks --strict --force 2>&1',
+      { cwd: tempDir, encoding: 'utf8', timeout: 30_000 },
+    );
     assert.match(output, /pre-commit/);
+    assert.match(output, /pre-push/);
+  });
+
+  it('strict hooks block a commit without spec', () => {
+    writeFileSync(join(tempDir, 'dummy.txt'), 'hello');
+    execSync('git add .', { cwd: tempDir, stdio: 'ignore' });
+
+    try {
+      execSync('git commit -m "should be blocked"', {
+        cwd: tempDir,
+        encoding: 'utf8',
+        timeout: 30_000,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
+      assert.fail('Commit should have been blocked by strict hooks');
+    } catch (e) {
+      const merged = (e.stdout ?? '') + '\n' + (e.stderr ?? '');
+      assert.match(merged, /BLOCKED|strict/i,
+        'Hook should mention strict-mode blocking');
+    }
   });
 });
 
