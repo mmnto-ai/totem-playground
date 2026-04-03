@@ -129,6 +129,12 @@ describe('totem init --pilot', () => {
 });
 
 describe('totem hooks', () => {
+  after(() => {
+    // Always restore standard hooks so a test run (or Ctrl+C) never
+    // leaves the developer's local env in strict mode.
+    totemMerged(['hooks', '--standard', '--force']);
+  });
+
   it('installs hooks non-interactively', () => {
     const { output, exitCode } = totemMerged(['hooks', '--force']);
     assert.equal(exitCode, 0);
