@@ -97,6 +97,50 @@ describe('totem doctor', () => {
   });
 });
 
+// ─── Adoption features ─────────────────────────────────────────────
+
+describe('totem init --pilot', () => {
+  const PILOT_STATE = '.totem/pilot-state.json';
+  let hadPilotState = false;
+
+  before(() => { hadPilotState = existsSync(PILOT_STATE); });
+  after(() => {
+    if (!hadPilotState && existsSync(PILOT_STATE)) {
+      try { unlinkSync(PILOT_STATE); } catch {}
+    }
+  });
+
+  it('creates pilot-state.json', () => {
+    // init --pilot may exit 1 due to interactive readline in non-TTY,
+    // but it still writes pilot-state.json before that point.
+    totemMerged(['init', '--pilot']);
+    assert.ok(existsSync(PILOT_STATE),
+      'pilot-state.json should exist after init --pilot');
+  });
+
+  it('pilot-state.json tracks push count and violations', () => {
+    const content = JSON.parse(readFileSync(PILOT_STATE, 'utf8'));
+    assert.ok('startedAt' in content,  'should have startedAt');
+    assert.ok('pushCount' in content,  'should have pushCount');
+    assert.ok('violations' in content, 'should have violations');
+  });
+});
+
+describe('totem hooks', () => {
+  it('installs hooks non-interactively', () => {
+    const { output, exitCode } = totemMerged(['hooks', '--force']);
+    assert.equal(exitCode, 0);
+    assert.match(output, /pre-commit/);
+    assert.match(output, /pre-push/);
+  });
+
+  it('supports --strict tier flag', () => {
+    const { output, exitCode } = totemMerged(['hooks', '--strict', '--force']);
+    assert.equal(exitCode, 0);
+    assert.match(output, /pre-commit/);
+  });
+});
+
 // ─── Import pipeline (P4) ──────────────────────────────────────────
 
 describe('totem import --from-eslint', () => {
