@@ -34,7 +34,7 @@ No API keys needed. No config. Just clone and lint.
 
 ## Pipeline Engine: Create Rules, Not Just Enforce Them
 
-Totem 1.8 introduces the **Pipeline Engine** — 5 pipelines for turning governance knowledge into compiled rules. This playground demos the zero-LLM import pipeline (P4) and walks through the manual authoring pipeline (P1, which requires an LLM key for the compile step):
+The **Pipeline Engine** provides 5 pipelines for turning governance knowledge into compiled rules. This playground demos the zero-LLM import pipeline (P4) and walks through the manual authoring pipeline (P1, which requires an LLM key for the compile step):
 
 ### P4 — Import from ESLint
 
@@ -84,6 +84,53 @@ Three more pipelines exist:
 | P5 — Observation | Auto-captures findings from review into reusable lessons | Zero-LLM at capture; LLM only if the review itself uses one |
 
 Set `GEMINI_API_KEY`, `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY` in your environment to try P1 compile, P2, or P3. See the [main Totem docs](https://github.com/mmnto-ai/totem) for details.
+
+## Pilot Mode: Gradual Adoption
+
+Totem 1.10 introduces **pilot mode** — a warn-only enforcement tier that lets teams try governance without blocking commits. After a configurable threshold of clean runs, the project graduates to full enforcement automatically.
+
+```bash
+# Initialize with pilot enforcement (warn-only, no blocking)
+totem init --pilot
+
+# Inspect the created state file
+cat .totem/pilot-state.json
+# → { "startedAt": "...", "pushCount": 0, "violations": [] }
+
+# Lint runs but violations warn instead of failing
+totem lint
+
+# Hooks warn instead of blocking — no surprises during adoption
+totem hooks --force
+```
+
+`pilot-state.json` tracks push counts and violation history. Once the threshold is met (default: 14 days or 50 pushes), Totem graduates the project to full enforcement. Check progress with `totem status`.
+
+## Enforcement Tiers
+
+Totem supports tiered enforcement. The `--strict` flag installs hooks at the highest tier, adding spec-completion checks alongside lint:
+
+```bash
+# Install hooks with strict enforcement (spec-required + shield gate)
+totem hooks --strict --force
+
+# Standard tier (default) — lint enforcement only
+totem hooks --standard --force
+
+# Check current tier and hook status
+totem describe
+```
+
+### Agent Auto-Detection
+
+When running inside an AI coding agent, Totem auto-detects the environment via variables like `CLAUDE_CODE=1`. The `init` command reports detected tools:
+
+```bash
+totem init --pilot
+# → Detected AI tools: Claude Code, Gemini CLI
+```
+
+Agent-authored commits receive stricter scrutiny under the strict tier — the same rules, applied with spec-completion gates.
 
 ## Explore with the CLI
 
