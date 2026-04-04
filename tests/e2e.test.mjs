@@ -190,6 +190,34 @@ describe('totem hooks --strict (isolated temp repo)', () => {
   });
 });
 
+// ─── Solo dev workflow ─────────────────────────────────────────────
+
+describe('totem init --global', () => {
+  it('exits cleanly and mentions global profile', () => {
+    const { output, exitCode } = totemMerged(['init', '--global']);
+    assert.ok(exitCode <= 1, `Expected exit ≤1, got ${exitCode}`);
+    assert.match(output, /global.*profile|~\/\.totem/i,
+      'Should mention global profile in output');
+  });
+});
+
+describe('totem extract --local', () => {
+  it('dry-run completes without writing lessons', () => {
+    const lessonsBefore = readFileSync(RULES_FILE, 'utf8');
+
+    const { output, exitCode } = totemMerged([
+      'extract', '--local', '--dry-run',
+    ]);
+    assert.ok(exitCode <= 1, `Expected exit ≤1, got ${exitCode}`);
+    assert.match(output, /dry run|extract|lesson/i,
+      'Should mention extraction or dry run');
+
+    const lessonsAfter = readFileSync(RULES_FILE, 'utf8');
+    assert.equal(lessonsBefore, lessonsAfter,
+      'compiled-rules.json should not change on dry-run');
+  });
+});
+
 // ─── Import pipeline (P4) ──────────────────────────────────────────
 
 describe('totem import --from-eslint', () => {

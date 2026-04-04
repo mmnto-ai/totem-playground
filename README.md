@@ -132,6 +132,50 @@ totem init --pilot
 
 Agent-authored commits receive stricter scrutiny under the strict tier — the same rules, applied with spec-completion gates.
 
+## Solo Dev Workflow
+
+Totem is not just for teams. The `--global` and `--local` flags let individual developers build a personal governance baseline that follows them across projects.
+
+### Set Up a Global Profile
+
+```bash
+# Scaffold a personal baseline at ~/.totem/
+totem init --global
+# → Global profile created at ~/.totem
+# → 23 universal baseline rules installed.
+
+# Your global lessons and rules live in ~/.totem/
+ls ~/.totem/
+```
+
+Global config acts as a fallback — any project without its own `.totem/` directory inherits your personal standards.
+
+### Extract Lessons from Local Work
+
+No PR needed. `extract --local` examines your working tree and synthesizes lessons from staged diffs, unstaged edits, and unpushed commits:
+
+```bash
+# Pull lessons from local changes (requires LLM API key)
+totem extract --local
+
+# Preview without writing
+totem extract --local --dry-run
+
+# See what was captured
+totem lesson list
+```
+
+### Global Fallback
+
+When you run `totem lint` in a project without a `.totem/` directory, Totem falls back to your global profile at `~/.totem/`:
+
+```bash
+cd ~/some-random-project
+totem lint    # uses ~/.totem/ rules and lessons
+```
+
+Every repo you touch gets at least your personal governance baseline, even before you run `totem init`.
+
 ## Explore with the CLI
 
 Commands are grouped: **Core** (`lint`, `review`, `check`, `spec`), **Entities** (`rule`, `lesson`, `exemption`, `config`), **Workflow** (`wrap`, `triage`, `triage-pr`), and **Setup** (`init`, `sync`, `hooks`, `doctor`, `status`). Run `totem --help` to see the full map.
