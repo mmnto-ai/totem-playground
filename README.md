@@ -217,9 +217,9 @@ Or better: point your AI agent at this repo and tell it to fix everything. See h
 
 This repo validates that Totem's governance compiler works on a real-world project — not just on itself. It's also our permanent regression test for future Totem releases.
 
-The E2E suite (13 tests) covers:
+The E2E suite covers:
 
-- **Core enforcement:** 22 compiled rules, `status`, `doctor`, ESLint import (dry-run and mutating)
+- **Core enforcement:** compiled rules, `status`, `doctor`, ESLint import (dry-run and mutating)
 - **Pilot mode:** `init --pilot` creates `pilot-state.json` with the expected structure
 - **Strict hooks:** hooks install in an isolated temp repo and physically block commits missing `totem spec`
 - **Global profile:** `init --global` scaffolds a personal baseline at `~/.totem/`
