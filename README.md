@@ -1,6 +1,6 @@
 # Totem Playground
 
-A broken Next.js app with 5 intentional architectural violations. [Totem](https://github.com/mmnto-ai/totem) catches all of them — and now you can create your own rules too.
+A broken Next.js app with 5 intentional architectural violations. [Totem](https://github.com/mmnto-ai/totem) catches all of them — zero config, zero friction. Try it globally with a personal profile, adopt gradually with pilot mode, or go strict with agent-aware enforcement.
 
 ## Try It In Your Browser
 
@@ -152,10 +152,10 @@ Global config acts as a fallback — any project without its own `.totem/` direc
 
 ### Extract Lessons from Local Work
 
-No PR needed. `extract --local` examines your working tree and synthesizes lessons from staged diffs, unstaged edits, and unpushed commits:
+No PR needed. `extract --local` examines your working tree and synthesizes lessons from staged diffs, unstaged edits, and unpushed commits. Requires an LLM API key (`GEMINI_API_KEY`, `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY`):
 
 ```bash
-# Pull lessons from local changes (requires LLM API key)
+# Pull lessons from local changes
 totem extract --local
 
 # Preview without writing
@@ -216,6 +216,15 @@ Or better: point your AI agent at this repo and tell it to fix everything. See h
 ## What This Tests
 
 This repo validates that Totem's governance compiler works on a real-world project — not just on itself. It's also our permanent regression test for future Totem releases.
+
+The E2E suite (13 tests) covers:
+
+- **Core enforcement:** 22 compiled rules, `status`, `doctor`, ESLint import (dry-run and mutating)
+- **Pilot mode:** `init --pilot` creates `pilot-state.json` with the expected structure
+- **Strict hooks:** hooks install in an isolated temp repo and physically block commits missing `totem spec`
+- **Global profile:** `init --global` scaffolds a personal baseline at `~/.totem/`
+- **Local extraction:** `extract --local --dry-run` completes without mutating `compiled-rules.json`
+- **Resilience:** ghost AST rules, overly broad regex, and corrupt exemption state
 
 ---
 
