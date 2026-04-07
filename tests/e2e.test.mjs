@@ -665,9 +665,7 @@ describe('totem doctor --pr runSelfHealing downgrade (isolated temp repo)', () =
     // to check against, and so runSelfHealing can commit its mutations.
     // Plain `git init` (no `-b main`) for compatibility with Git < 2.28
     // — matches the existing `totem hooks --strict` test in this file.
-    // totem-context: tempDir is a freshly-created mkdtempSync path, no
-    // existing .git can be present — the "scaffolding scripts" rule
-    // doesn't apply here.
+    // totem-context: tempDir is a fresh mkdtempSync path; no .git can pre-exist.
     execSync('git init', { cwd: tempDir, stdio: 'ignore' });
     execSync('git config user.email "test@totem.test"', { cwd: tempDir, stdio: 'ignore' });
     execSync('git config user.name "Test"', { cwd: tempDir, stdio: 'ignore' });
