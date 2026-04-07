@@ -577,22 +577,8 @@
       "message": "Effects must clean up subscriptions and timers",
       "engine": "ast",
       "astQuery": "(call_expression function: (identifier) @name (#eq? @name \"useEffect\") arguments: (arguments (arrow_function body: (statement_block) @body (#match? @body \"(setTimeout|setInterval|addEventListener|\\\\.subscribe)\") (#not-match? @body \"return\\\\s*(\\\\(\\\\s*\\\\)|function)\")))) @violation",
-      "compiledAt": "2026-04-07T04:46:07.909Z",
-      "createdAt": "2026-04-07T04:46:07.909Z",
-      "fileGlobs": [
-        "src/**/*.ts",
-        "src/**/*.tsx"
-      ],
-      "severity": "warning"
-    },
-    {
-      "lessonHash": "205ca7ed838bfeaf",
-      "lessonHeading": "Never swallow errors with empty catch blocks",
-      "pattern": "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}|catch\\s*\\{\\s*\\}",
-      "message": "Never swallow errors with empty catch blocks",
-      "engine": "regex",
-      "compiledAt": "2026-04-07T04:46:07.910Z",
-      "createdAt": "2026-04-07T04:46:07.910Z",
+      "compiledAt": "2026-04-07T05:20:06.051Z",
+      "createdAt": "2026-04-07T05:20:06.051Z",
       "fileGlobs": [
         "src/**/*.ts",
         "src/**/*.tsx"
@@ -602,32 +588,60 @@
     {
       "lessonHash": "24f237c4d1e43339",
       "lessonHeading": "Use a validated config schema instead of direct process.env access",
+      "pattern": "process\\.env(?:\\.|\\[)",
       "message": "Use a validated config schema instead of direct process.env access",
       "engine": "regex",
-      "severity": "warning",
-      "pattern": "process\\.env(?:\\.|\\[)",
-      "compiledAt": "2026-04-07T05:10:42.733Z",
-      "createdAt": "2026-04-07T05:10:42.733Z",
+      "compiledAt": "2026-04-07T05:20:06.052Z",
+      "createdAt": "2026-04-07T05:20:06.052Z",
       "fileGlobs": [
         "src/**/*.ts",
         "src/**/*.tsx",
         "!**/env.ts",
         "!**/*.env.ts",
         "!**/config/env.ts"
-      ]
+      ],
+      "severity": "warning"
+    },
+    {
+      "lessonHash": "205ca7ed838bfeaf",
+      "lessonHeading": "Never swallow errors with empty catch blocks",
+      "pattern": "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}|catch\\s*\\{\\s*\\}",
+      "message": "Never swallow errors with empty catch blocks",
+      "engine": "regex",
+      "compiledAt": "2026-04-07T05:20:06.052Z",
+      "createdAt": "2026-04-07T05:20:06.052Z",
+      "fileGlobs": [
+        "src/**/*.ts",
+        "src/**/*.tsx"
+      ],
+      "severity": "warning"
     },
     {
       "lessonHash": "3836c03a32a31f41",
       "lessonHeading": "Never build SQL queries with string concatenation",
+      "pattern": "\\b(?:[Ss][Ee][Ll][Ee][Cc][Tt]|[Ii][Nn][Ss][Ee][Rr][Tt]|[Uu][Pp][Dd][Aa][Tt][Ee]|[Dd][Ee][Ll][Ee][Tt][Ee])\\b.*(\\+|\\$\\{)",
       "message": "Never build SQL queries with string concatenation",
       "engine": "regex",
-      "severity": "error",
-      "pattern": "\\b(?:[Ss][Ee][Ll][Ee][Cc][Tt]|[Ii][Nn][Ss][Ee][Rr][Tt]|[Uu][Pp][Dd][Aa][Tt][Ee]|[Dd][Ee][Ll][Ee][Tt][Ee])\\b.*(\\+|\\$\\{)",
-      "compiledAt": "2026-04-07T05:10:42.734Z",
-      "createdAt": "2026-04-07T05:10:42.734Z",
+      "compiledAt": "2026-04-07T05:20:06.052Z",
+      "createdAt": "2026-04-07T05:20:06.052Z",
       "fileGlobs": [
         "src/**/*.ts",
         "src/**/*.tsx"
+      ],
+      "severity": "error"
+    },
+    {
+      "lessonHash": "a9d2ea30a86ad96f",
+      "lessonHeading": "Mark of incomplete work in source files",
+      "message": "TODO marker found — resolve or move to a tracked issue before committing.",
+      "engine": "regex",
+      "severity": "warning",
+      "pattern": "[Tt][Oo][Dd][Oo]",
+      "compiledAt": "2026-04-07T05:50:38.600Z",
+      "createdAt": "2026-04-07T05:50:38.600Z",
+      "fileGlobs": [
+        "**/*.ts",
+        "**/*.tsx"
       ]
     }
   ],
