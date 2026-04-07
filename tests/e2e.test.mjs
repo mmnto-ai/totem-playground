@@ -642,6 +642,183 @@ describe('totem lesson compile --upgrade', {
   });
 });
 
+describe('totem doctor --pr runSelfHealing downgrade (isolated temp repo)', () => {
+  // Uses an isolated tempdir so the real playground's compiled-rules.json
+  // and git state are never touched.  The test exercises the DOWNGRADE
+  // phase of runSelfHealing: an `error`-severity rule with a high bypass
+  // rate in the Trap Ledger must be physically rewritten to `warning`.
+  //
+  // Zero-LLM by construction — the seeded metrics have all code-context
+  // events, so the upgrade phase has no candidates and doesn't invoke
+  // the compiler.  Stays offline end-to-end.
+  //
+  // Runs in the default harness (no TOTEM_E2E_LLM gate needed).
+
+  const RULE_HASH = 'deadbeef12345678';  // 16 hex chars, fake but valid shape
+  let tempDir;
+
+  before(() => {
+    tempDir = mkdtempSync(join(tmpdir(), 'totem-heal-'));
+
+    // Initialise a git repo so doctor's dirty-state guard has something
+    // to check against, and so runSelfHealing can commit its mutations.
+    execSync('git init -b main', { cwd: tempDir, stdio: 'ignore' });
+    execSync('git config user.email "test@totem.test"', { cwd: tempDir, stdio: 'ignore' });
+    execSync('git config user.name "Test"', { cwd: tempDir, stdio: 'ignore' });
+
+    // Minimal totem scaffold — must declare at least one `targets` entry
+    // because runSelfHealing calls loadConfig which enforces the schema
+    // (empty targets array is rejected).  The target glob doesn't need
+    // to match anything real here; doctor --pr never runs lint against
+    // the throwaway repo's source, only inspects rules + ledger.
+    writeFileSync(
+      join(tempDir, 'totem.config.ts'),
+      `export default {
+  targets: [
+    { glob: 'src/**/*.ts', type: 'code', strategy: 'typescript-ast' },
+  ],
+};
+`,
+    );
+
+    // compiled-rules.json with one error-severity rule that will be
+    // the downgrade target.  Must be `error` severity —
+    // downgradeRuleToWarning is a no-op for warning-severity rules.
+    mkdirSync(join(tempDir, '.totem'), { recursive: true });
+    writeFileSync(
+      join(tempDir, '.totem', 'compiled-rules.json'),
+      JSON.stringify(
+        {
+          version: 1,
+          rules: [
+            {
+              lessonHash: RULE_HASH,
+              lessonHeading: 'Struggling test rule',
+              message: 'Noisy rule that should be downgraded',
+              pattern: 'TODO',
+              engine: 'regex',
+              severity: 'error',
+              compiledAt: '2026-01-01T00:00:00.000Z',
+              createdAt:  '2026-01-01T00:00:00.000Z',
+              fileGlobs: ['src/**/*.ts'],
+            },
+          ],
+          nonCompilable: [],
+        },
+        null,
+        2,
+      ) + '\n',
+    );
+
+    // rule-metrics.json — 3 triggers, all code-context.  Code-only
+    // context means the upgrade phase will find NO non-code candidates,
+    // so the expensive LLM path is never entered.
+    mkdirSync(join(tempDir, '.totem', 'cache'), { recursive: true });
+    writeFileSync(
+      join(tempDir, '.totem', 'cache', 'rule-metrics.json'),
+      JSON.stringify(
+        {
+          version: 1,
+          rules: {
+            [RULE_HASH]: {
+              triggerCount: 3,
+              suppressCount: 0,
+              lastTriggeredAt:  '2026-04-01T00:00:00.000Z',
+              lastSuppressedAt: null,
+              contextCounts: { code: 3, string: 0, comment: 0, regex: 0, unknown: 0 },
+            },
+          },
+        },
+        null,
+        2,
+      ) + '\n',
+    );
+
+    // Trap Ledger — 4 suppress events against the same rule.
+    // Total events = 3 triggers + 4 suppresses = 7 (>= MIN_EVENTS 5)
+    // Bypass rate  = 4 / 7 ≈ 57%            (>  BYPASS_THRESHOLD 30%)
+    // These two conditions together make the rule a downgrade candidate.
+    mkdirSync(join(tempDir, '.totem', 'ledger'), { recursive: true });
+    const events = Array.from({ length: 4 }, (_, i) => JSON.stringify({
+      timestamp: '2026-04-02T00:00:00.000Z',
+      type:      'suppress',
+      ruleId:    RULE_HASH,
+      file:      `src/example-${i}.ts`,
+      line:      i + 1,
+      justification: 'test bypass event',
+      source:    'lint',
+    })).join('\n') + '\n';
+    writeFileSync(join(tempDir, '.totem', 'ledger', 'events.ndjson'), events);
+
+    // Commit everything so the compiled-rules.json dirty-state guard
+    // passes when runSelfHealing inspects it.  runSelfHealing aborts
+    // the downgrade phase if the rules file has uncommitted changes.
+    execSync('git add -A', { cwd: tempDir, stdio: 'ignore' });
+    execSync('git commit -m "initial" --no-verify', { cwd: tempDir, stdio: 'ignore' });
+  });
+
+  after(() => {
+    try { rmSync(tempDir, { recursive: true, force: true }); } catch {}
+  });
+
+  it('downgrades the struggling rule from error to warning', () => {
+    // Use spawnSync-via-execSync so we can capture merged output even
+    // when doctor exits non-zero.  (`gh pr create` may fail in a repo
+    // with no remote — runSelfHealing catches that cleanly and keeps
+    // going, but doctor as a whole may still surface a warning.)
+    let output = '';
+    try {
+      output = execSync('npx @mmnto/cli doctor --pr 2>&1', {
+        cwd: tempDir,
+        encoding: 'utf8',
+        timeout: 60_000,
+      });
+    } catch (e) {
+      // runSelfHealing's commit phase may try `gh pr create` and fail
+      // (no remote, no gh, etc.). That's OK — the downgrade we're
+      // testing happens before that step, so we still want to inspect
+      // the output and the mutated rules file.
+      output = (e.stdout ?? '') + (e.stderr ?? '');
+    }
+
+    // Phase banners should appear — these prove runSelfHealing was entered
+    // and walked at least the ledger-analysis + downgrade phases.
+    assert.match(output, /Auto-Healing/i,
+      'doctor --pr should announce the Auto-Healing phase');
+    assert.match(output, /bypass|struggl|downgrad/i,
+      'output should mention the downgrade reasoning');
+
+    // runSelfHealing commits its mutation on a new `totem/auto-healing-<ts>`
+    // branch and then switches HEAD back to the original branch, so the
+    // working tree looks pristine after the command returns (doctor.js:884
+    // creates the branch, doctor.js:990 checks out the original).  To
+    // verify the downgrade we need to read compiled-rules.json FROM THE
+    // AUTO-HEALING BRANCH, not from the working tree.
+    const branchesRaw = execSync('git branch --list "totem/auto-healing-*"', {
+      cwd: tempDir,
+      encoding: 'utf8',
+    });
+    const healBranch = branchesRaw
+      .split('\n')
+      .map((l) => l.replace(/^\*?\s+/, '').trim())
+      .find((b) => b.startsWith('totem/auto-healing-'));
+    assert.ok(healBranch,
+      `doctor --pr should have created a totem/auto-healing-* branch; git branch output was:\n${branchesRaw}`);
+
+    const rulesFromHealBranch = execSync(
+      `git show ${healBranch}:.totem/compiled-rules.json`,
+      { cwd: tempDir, encoding: 'utf8' },
+    );
+    const after = JSON.parse(rulesFromHealBranch);
+    const rule = after.rules.find((r) => r.lessonHash === RULE_HASH);
+    assert.ok(rule, 'rule must still exist post-downgrade (ADR-027: never delete)');
+    assert.equal(rule.severity, 'warning',
+      `rule severity on ${healBranch} should be "warning", got "${rule.severity}"`);
+    assert.equal(after.rules.length, 1,
+      'rule count should be preserved — runSelfHealing never adds or removes rules');
+  });
+});
+
 describe('.totem/cache/rule-metrics.json shape', () => {
   it('has a valid schema if present', (t) => {
     if (!existsSync(METRICS_FILE)) {
