@@ -66,6 +66,39 @@ function totemMerged(args, timeout = 60_000) {
 /** Run a totem command with an extended 3-minute timeout for LLM round-trips. */
 const totemMergedLong = (args) => totemMerged(args, 180_000);
 
+/**
+ * Run a totem command from inside an isolated temp directory.
+ *
+ * Tests that spin up throwaway repos (e.g. `totem hooks --strict`,
+ * `totem doctor --pr`) can't use `npx @mmnto/cli` because npx walks UP
+ * from cwd looking for node_modules, finds none above the tempdir, and
+ * falls back to the npm cache — which is empty in fresh CI runners and
+ * triggers `ENOTCACHED` against the registry. This helper sidesteps npm
+ * entirely by invoking the CLI's entry script directly with the running
+ * Node binary, so the tempdir's cwd governs config/state lookup but
+ * the CLI itself is resolved deterministically from the playground's
+ * own node_modules.
+ *
+ * Returns the same { output, exitCode } shape as totemMerged.
+ */
+function totemInTempDir(tempDir, args, timeout = 60_000) {
+  const cliEntry = join(process.cwd(), 'node_modules', '@mmnto', 'cli', 'dist', 'index.js');
+  // Quote the node and CLI paths in case either contains spaces (Windows
+  // %APPDATA% paths often do).  `2>&1` merges stderr into stdout the
+  // same way the other helpers in this file do.
+  const cmd = `"${process.execPath}" "${cliEntry}" ${args.join(' ')} 2>&1`;
+  try {
+    const output = execSync(cmd, {
+      cwd: tempDir,
+      encoding: 'utf8',
+      timeout,
+    });
+    return { output, exitCode: 0 };
+  } catch (e) {
+    return { output: e.stdout ?? '', exitCode: e.status ?? 1 };
+  }
+}
+
 // ─── Entity commands ────────────────────────────────────────────────
 
 describe('totem rule list --json', () => {
@@ -172,10 +205,15 @@ describe('totem hooks --strict (isolated temp repo)', () => {
   });
 
   it('installs strict hooks', () => {
-    const output = execSync(
-      'npx @mmnto/cli hooks --strict --force 2>&1',
-      { cwd: tempDir, encoding: 'utf8', timeout: 30_000 },
+    // Use totemInTempDir (not `npx @mmnto/cli`) so the test stays
+    // hermetic in offline CI — npx would walk up from tempDir looking
+    // for node_modules, find none, and fall back to the registry.
+    const { output, exitCode } = totemInTempDir(
+      tempDir,
+      ['hooks', '--strict', '--force'],
+      30_000,
     );
+    assert.equal(exitCode, 0, `hooks install should succeed; got:\n${output}`);
     assert.match(output, /pre-commit/);
     assert.match(output, /pre-push/);
   });
@@ -775,24 +813,15 @@ describe('totem doctor --pr runSelfHealing downgrade (isolated temp repo)', () =
   });
 
   it('downgrades the struggling rule from error to warning', () => {
-    // Use spawnSync-via-execSync so we can capture merged output even
-    // when doctor exits non-zero.  (`gh pr create` may fail in a repo
-    // with no remote — runSelfHealing catches that cleanly and keeps
-    // going, but doctor as a whole may still surface a warning.)
-    let output = '';
-    try {
-      output = execSync('npx @mmnto/cli doctor --pr 2>&1', {
-        cwd: tempDir,
-        encoding: 'utf8',
-        timeout: 60_000,
-      });
-    } catch (e) {
-      // runSelfHealing's commit phase may try `gh pr create` and fail
-      // (no remote, no gh, etc.). That's OK — the downgrade we're
-      // testing happens before that step, so we still want to inspect
-      // the output and the mutated rules file.
-      output = (e.stdout ?? '') + (e.stderr ?? '');
-    }
+    // Use totemInTempDir (not `npx @mmnto/cli`) so the test stays
+    // hermetic in offline CI — npx would walk up from tempDir looking
+    // for node_modules, find none, and fall back to the registry.
+    // The helper handles the try/catch internally, which is convenient
+    // here because runSelfHealing's commit phase may try `gh pr create`
+    // and fail (no remote, no gh) — that's OK, the downgrade happens
+    // BEFORE that step and we still want to inspect the output and the
+    // mutated rules file regardless of exit code.
+    const { output } = totemInTempDir(tempDir, ['doctor', '--pr']);
 
     // Phase banners should appear — these prove runSelfHealing was entered
     // and walked at least the ledger-analysis + downgrade phases.
