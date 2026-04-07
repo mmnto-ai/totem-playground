@@ -34,7 +34,7 @@ No API keys needed. No config. Just clone and lint.
 
 ## Pipeline Engine: Create Rules, Not Just Enforce Them
 
-The **Pipeline Engine** provides 5 pipelines for turning governance knowledge into compiled rules. This playground demos the zero-LLM import pipeline (P4) and walks through the manual authoring pipeline (P1, which requires an LLM key for the compile step):
+The **Pipeline Engine** provides 5 pipelines for turning governance knowledge into compiled rules. Compilation defaults to **Claude Sonnet 4.6** (Strategy #73 benchmark: 90% correctness, 100% safety, 2.4s average per lesson). This playground demos the zero-LLM import pipeline (P4) and walks through the manual authoring pipeline (P1, which requires an LLM key for the compile step):
 
 ### P4 — Import from ESLint
 
@@ -83,7 +83,98 @@ Three more pipelines exist:
 | P3 — Lesson Compile | Compiles lesson narratives into enforceable rules | LLM API key (also used by P1's compile step) |
 | P5 — Observation | Auto-captures findings from review into reusable lessons | Zero-LLM at capture; LLM only if the review itself uses one |
 
-Set `GEMINI_API_KEY`, `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY` in your environment to try P1 compile, P2, or P3. See the [main Totem docs](https://github.com/mmnto-ai/totem) for details.
+Set `ANTHROPIC_API_KEY` in your environment to try P1 compile, P2, or P3 — the playground's `totem.config.ts` hardcodes `provider: 'anthropic'` for the orchestrator. To use Gemini or OpenAI instead, also update `orchestrator.provider` in `totem.config.ts` and set `GEMINI_API_KEY` or `OPENAI_API_KEY` accordingly. See the [main Totem docs](https://github.com/mmnto-ai/totem) for details.
+
+## Demo: The Refinement Engine (1.13.0)
+
+Totem 1.13.0 introduced the **Refinement Engine** — a self-healing loop that uses context telemetry from lint runs to identify rules that have grown noisy, then auto-narrows them through telemetry-guided re-compilation. The headline flow is:
+
+> `totem lint` (many times) → `totem doctor` (flags noisy rules) → `totem compile --upgrade <hash>` (re-compile with a telemetry directive) → narrower rule.
+
+The playground is pre-seeded with a deliberately noisy rule — **"Mark of incomplete work in source files"** (`.totem/lessons/lesson-pg-007.md`) — and adversarial `TODO` fixtures in `src/lib/todo-fixtures.ts` so you can walk the loop end-to-end. Requires `ANTHROPIC_API_KEY` for the `--upgrade` step; the rest is zero-LLM.
+
+### 1. Seed telemetry with a few lint passes
+
+Stage a small edit — any file under `src/` that introduces a new `TODO` line works — then run lint. Context telemetry accumulates in the local `.totem/cache/rule-metrics.json` (gitignored, grows over time):
+
+```bash
+totem lint
+```
+
+Each matching line is classified by its AST context (code, string, comment, regex) via Tree-sitter and bucketed in `rule-metrics.json`. Violations are only emitted for **code-context** matches — non-code hits are telemetry-only, so a noisy regex stays out of your way while quietly recording where it's misfiring. Run lint a handful of times (or let CI do it) to cross the `MIN_CONTEXT_EVENTS` threshold of 5.
+
+### 2. Ask the doctor what's noisy
+
+```bash
+totem doctor
+```
+
+Expected output:
+
+```text
+[Totem] Running diagnostics...
+
+  ✓ Config             totem.config.ts found
+  ✓ Compiled Rules     40 rules loaded
+  ✓ Git Hooks          All 4 hooks installed
+  ✓ Embedding          ollama (gemma4)
+  ✓ Index              .lancedb/ exists
+  ✓ Secret Scan        No leaked keys detected
+  ✓ Secrets File Security secrets.json is not tracked by git
+  ! Upgrade Candidates 2 rule(s) firing in non-code contexts:
+      b0db9b6d5e5475c1 (regex, 100% non-code, 6 matches),
+      a9d2ea30a86ad96f (regex, 85% non-code, 20 matches)
+    → Run `totem compile --upgrade <hash>` to re-compile through
+      Claude Sonnet with telemetry guidance.
+```
+
+The doctor reads `rule-metrics.json`, computes each regex rule's non-code ratio as `(strings + comments + regex) / total_classified`, and flags anything above the `NON_CODE_THRESHOLD` (20%). The seeded `a9d2ea30a86ad96f` rule fires ~85% in non-code contexts — matching TODO mentions in strings, comments, and regex literals from `todo-fixtures.ts`. The baseline `b0db9b6d5e5475c1` rule ("Silent failures and TODO placeholders") shows up as an incidental candidate because it, too, matches comment-context TODOs.
+
+### 3. Upgrade the flagged rule
+
+```bash
+totem compile --upgrade a9d2ea30a86ad96f
+```
+
+Expected output:
+
+```text
+[Compile] Found 66 lessons
+[Compile] --upgrade: targeting a9d2ea30a86ad96f (Mark of incomplete work in source files)
+[Compile] --upgrade: telemetry directive prepared (244 chars)
+[Compile] Compiling...
+[Compile] Model: claude-sonnet-4-6
+[Compile] Done: ~30s | 3KB prompt
+[Compile] [Mark of incomplete work in source files] Compiled (regex, warning): /[Tt][Oo][Dd][Oo]/
+[Compile] 40 rules — 1 compiled, 0 skipped, 0 failed
+```
+
+Under the hood, Sonnet receives the original lesson body **plus** a telemetry directive summarizing where the rule has been firing — something like *"This rule was flagged because 85% of matches occur in non-code contexts (strings: 5, comments: 10, regex literals: 2). Please prefer an ast-grep structural pattern or a narrower regex that targets code identifiers only."*
+
+Depending on the lesson's Bad/Good snippets and what Sonnet can produce while still passing Pipeline 3's self-verification gate, the outcome is one of:
+
+- **Narrower regex** — e.g., `\b[Tt][Oo][Dd][Oo][A-Za-z_]+` to match identifiers like `todoList` only.
+- **Engine shift to `ast-grep`** — a structural pattern that matches AST nodes, not characters, so strings and comments are excluded by construction.
+- **Same pattern, refreshed compile** — when Sonnet determines the existing pattern is already the safest form that keeps all Bad snippets matching, the rule is re-written with an updated `compiledAt` timestamp and sometimes a revised `message`, but the pattern stays put.
+
+All three are legitimate outcomes of the engine asking the question. The playground's pg-007 sits in the third category today because its Bad snippets intentionally span multiple contexts — which is exactly the scenario the Refinement Engine is designed to surface.
+
+### 4. Observe the result
+
+```bash
+git diff .totem/compiled-rules.json
+totem lint
+```
+
+`compiled-rules.json` will show the updated entry for `a9d2ea30a86ad96f` — at minimum `compiledAt` refreshes and `message` may be rephrased; if the pattern narrowed, you'll see the regex or `engine` field change. Re-running `totem lint` against the same fixtures should show fewer (or no) warnings if the pattern was narrowed, and the same count if Sonnet kept the pattern.
+
+### 5. The full self-healing sweep (optional)
+
+```bash
+totem doctor --pr
+```
+
+This is the complete arc: doctor's `runSelfHealing` pipeline walks the **downgrade → GC → upgrade** phases in a single pass and opens a PR with the result. The downgrade phase handles rules firing in zero contexts (stale lessons), the GC phase prunes rules whose lesson was deleted, and the upgrade phase runs `--upgrade` on every non-code candidate doctor would otherwise flag one at a time. Use `--pr` in CI to let the engine maintain rule precision automatically; use plain `totem doctor` for a read-only diagnostic during development.
 
 ## Pilot Mode: Gradual Adoption
 
@@ -142,7 +233,7 @@ Totem is not just for teams. The `--global` and `--local` flags let individual d
 # Scaffold a personal baseline at ~/.totem/
 totem init --global
 # → Global profile created at ~/.totem
-# → 23 universal baseline rules installed.
+# → 56 baseline rules installed.
 
 # Your global lessons and rules live in ~/.totem/
 ls ~/.totem/
