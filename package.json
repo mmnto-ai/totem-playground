@@ -15,9 +15,8 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@google/genai": "^1.48.0",
-    "@mmnto/cli": "^1.10.0",
-    "@mmnto/totem": "^1.10.0",
+    "@mmnto/cli": "^1.13.0",
+    "@mmnto/totem": "^1.13.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "typescript": "^5.0.0"
