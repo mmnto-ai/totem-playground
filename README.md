@@ -83,7 +83,7 @@ Three more pipelines exist:
 | P3 — Lesson Compile | Compiles lesson narratives into enforceable rules | LLM API key (also used by P1's compile step) |
 | P5 — Observation | Auto-captures findings from review into reusable lessons | Zero-LLM at capture; LLM only if the review itself uses one |
 
-Set `ANTHROPIC_API_KEY` (the default compile provider), `GEMINI_API_KEY`, or `OPENAI_API_KEY` in your environment to try P1 compile, P2, or P3. See the [main Totem docs](https://github.com/mmnto-ai/totem) for details.
+Set `ANTHROPIC_API_KEY` in your environment to try P1 compile, P2, or P3 — the playground's `totem.config.ts` hardcodes `provider: 'anthropic'` for the orchestrator. To use Gemini or OpenAI instead, also update `orchestrator.provider` in `totem.config.ts` and set `GEMINI_API_KEY` or `OPENAI_API_KEY` accordingly. See the [main Totem docs](https://github.com/mmnto-ai/totem) for details.
 
 ## Demo: The Refinement Engine (1.13.0)
 
@@ -111,7 +111,7 @@ totem doctor
 
 Expected output:
 
-```
+```text
 [Totem] Running diagnostics...
 
   ✓ Config             totem.config.ts found
@@ -138,7 +138,7 @@ totem compile --upgrade a9d2ea30a86ad96f
 
 Expected output:
 
-```
+```text
 [Compile] Found 66 lessons
 [Compile] --upgrade: targeting a9d2ea30a86ad96f (Mark of incomplete work in source files)
 [Compile] --upgrade: telemetry directive prepared (244 chars)
