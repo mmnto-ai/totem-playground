@@ -1,15 +1,16 @@
 // Adversarial fixtures for the Refinement Engine demo.
 //
-// Each line below intentionally trips the "Mark of incomplete work" rule
-// (\b[Tt][Oo][Dd][Oo]) in a DIFFERENT context so totem's context telemetry
-// accumulates a noisy distribution. `totem doctor` uses that distribution
-// to flag the rule as a regex→ast-grep upgrade candidate.
+// Each section below intentionally trips the "Mark of incomplete work" rule
+// ([Tt][Oo][Dd][Oo]) in a DIFFERENT AST context so totem's per-line context
+// telemetry accumulates a noisy distribution. `totem doctor` uses that
+// distribution to flag the rule as a regex→ast-grep upgrade candidate.
 //
 // totem's AST classifier decides context per-line by looking at the first
-// non-whitespace character and walking up the Tree-sitter ancestry. That's
-// why the string / regex fixtures below are multi-line template literals
-// or constructor calls — the match has to start inside the literal node,
-// not on an `export const` line that would classify as code.
+// non-whitespace character and walking up the Tree-sitter ancestry. The
+// string / comment / regex fixtures below are therefore structured so the
+// match lands on a line that BEGINS inside the corresponding literal node —
+// not on an `export const` line, which would classify as code regardless of
+// what substring the match was inside.
 //
 // These are demo props — not real code. They exist only to exercise the
 // refinement loop end-to-end.
@@ -30,11 +31,13 @@ More features coming soon.
 //    line classifies as 'comment')
 // TODO: optional enhancement for v2
 
-// 4. REGEX context — constructing a RegExp from a multi-line string where
-//    the TODO match lands inside a string_fragment. (A literal /TODO/ on
-//    an `export const` line would classify as code, not regex.)
-export const markerSource = [
-  'FIXME',
-  'TODO: convert this to an issue',
-  'HACK',
-].join('|');
+// 4. REGEX context — TODO lives on a line whose first non-whitespace
+//    character is inside a regex_pattern AST node. Using true RegExp literals
+//    (not quoted strings joined later) is what makes the classifier walk up
+//    into a `regex` ancestor instead of `string`.
+export const markerPatterns = [
+  /FIXME/,
+  /TODO: convert this to an issue/,
+  /HACK/,
+];
+export const markerSource = markerPatterns.map((p) => p.source).join('|');
