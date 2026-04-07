@@ -117,7 +117,7 @@ Expected output:
   ✓ Config             totem.config.ts found
   ✓ Compiled Rules     40 rules loaded
   ✓ Git Hooks          All 4 hooks installed
-  ✓ Embedding          ollama (nomic-embed-text)
+  ✓ Embedding          ollama (gemma4)
   ✓ Index              .lancedb/ exists
   ✓ Secret Scan        No leaked keys detected
   ✓ Secrets File Security secrets.json is not tracked by git

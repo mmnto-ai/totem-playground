@@ -1,7 +1,7 @@
 import type { TotemConfig } from '@mmnto/totem';
 
 const config: TotemConfig = {
-  embedding: { provider: 'ollama', model: 'nomic-embed-text' },
+  embedding: { provider: 'ollama', model: 'gemma4' },
   orchestrator: { provider: 'anthropic', defaultModel: 'claude-sonnet-4-6' },
   targets: [
     { glob: 'src/**/*.ts', type: 'code', strategy: 'typescript-ast' },
