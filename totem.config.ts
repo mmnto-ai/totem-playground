@@ -1,14 +1,8 @@
 import type { TotemConfig } from '@mmnto/totem';
 
 const config: TotemConfig = {
-  embedding: {
-    provider: 'gemini',
-    model: 'gemini-embedding-2-preview',
-  },
-  orchestrator: {
-    provider: 'gemini',
-    defaultModel: 'gemini-2.5-pro',
-  },
+  embedding: { provider: 'ollama', model: 'gemma4' },
+  orchestrator: { provider: 'anthropic', defaultModel: 'claude-sonnet-4-6' },
   targets: [
     { glob: 'src/**/*.ts', type: 'code', strategy: 'typescript-ast' },
     { glob: 'src/**/*.tsx', type: 'code', strategy: 'typescript-ast' },
@@ -19,3 +13,4 @@ const config: TotemConfig = {
 };
 
 export default config;
+

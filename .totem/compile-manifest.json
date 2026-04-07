@@ -1,7 +1,7 @@
 {
-  "compiled_at": "2026-03-29T01:36:06.882Z",
-  "model": "gemini-2.5-pro",
-  "input_hash": "3e23c23dc899409dd3cf28922effc3fda1b3f95ad3d1ff144c057b16d3a91e1e",
-  "output_hash": "3cfefeb63f61894883fb47bd2591d1c48c41142aa7341c5413c69caa7f2f7bb4",
-  "rule_count": 22
+  "compiled_at": "2026-04-07T04:08:37.217Z",
+  "model": "claude-sonnet-4-6",
+  "input_hash": "d5a06fe3a4bed4bc88a00da9b7504b17cbdd7eeab0c153bc9b82bb741fc8a31f",
+  "output_hash": "b64a6ed70b189c9019da8d27cf7878de5f263eb5be1a65f889acc8f4ffacf74d",
+  "rule_count": 38
 }

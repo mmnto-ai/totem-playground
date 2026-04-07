@@ -140,6 +140,11 @@ Middleware matchers or routing regular expressions that rely on environment-spec
 
 Hydration errors or SSR mismatches should not be caught and silenced by generic error boundaries without explicit logging. Masking these errors during development leads to unstable UI state and broken interactive elements in production. Source: vercel/next.js#44857. Fix: Explicitly log SSR errors to your monitoring service before allowing error boundaries to render fallback UI.
 
+**Pattern:** `componentDidCatch\s*\([^)]*\)\s*\{\s*\}`
+**Engine:** regex
+**Scope:** src/**/*.ts, src/**/*.tsx, src/**/*.jsx
+**Severity:** warning
+
 ## Lesson — Compiler transforms breaking CSS-in-JS injection
 
 **Tags:** compiler, css, universal
