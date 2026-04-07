@@ -8,6 +8,6 @@ Use a validated configuration module (e.g., Zod schema + a config.ts file) inste
 
 **Pattern:** `process\.env(?:\.|\[)`
 **Engine:** regex
-**Scope:** src/**/*.ts, src/**/*.tsx
+**Scope:** src/**/*.ts, src/**/*.tsx, !**/env.ts, !**/*.env.ts, !**/config/env.ts
 **Severity:** warning
 

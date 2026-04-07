@@ -571,13 +571,14 @@
       "severity": "warning"
     },
     {
-      "lessonHash": "168886d94ab00208",
-      "lessonHeading": "Use a validated config schema instead of direct process.env access",
-      "pattern": "process\\.env(?:\\.|\\[)",
-      "message": "Use a validated config schema instead of direct process.env access",
-      "engine": "regex",
-      "compiledAt": "2026-04-07T04:08:37.215Z",
-      "createdAt": "2026-04-07T04:08:37.215Z",
+      "lessonHash": "a7de8649661cbdc2",
+      "lessonHeading": "Effects must clean up subscriptions and timers",
+      "pattern": "",
+      "message": "Effects must clean up subscriptions and timers",
+      "engine": "ast",
+      "astQuery": "(call_expression function: (identifier) @name (#eq? @name \"useEffect\") arguments: (arguments (arrow_function body: (statement_block) @body (#match? @body \"(setTimeout|setInterval|addEventListener|\\\\.subscribe)\") (#not-match? @body \"return\\\\s*(\\\\(\\\\s*\\\\)|function)\")))) @violation",
+      "compiledAt": "2026-04-07T04:46:07.909Z",
+      "createdAt": "2026-04-07T04:46:07.909Z",
       "fileGlobs": [
         "src/**/*.ts",
         "src/**/*.tsx"
@@ -585,43 +586,45 @@
       "severity": "warning"
     },
     {
-      "lessonHash": "a7de8649661cbdc2",
-      "lessonHeading": "Effects must clean up subscriptions and timers",
-      "message": "Effects must clean up subscriptions and timers",
-      "engine": "ast",
-      "severity": "warning",
-      "pattern": "",
-      "astQuery": "(call_expression function: (identifier) @name (#eq? @name \"useEffect\") arguments: (arguments (arrow_function body: (statement_block) @body (#match? @body \"(setTimeout|setInterval|addEventListener|\\\\.subscribe)\") (#not-match? @body \"return\\\\s*(\\\\(\\\\s*\\\\)|function)\")))) @violation",
-      "compiledAt": "2026-04-07T04:46:07.909Z",
-      "createdAt": "2026-04-07T04:46:07.909Z",
-      "fileGlobs": [
-        "src/**/*.ts",
-        "src/**/*.tsx"
-      ]
-    },
-    {
       "lessonHash": "205ca7ed838bfeaf",
       "lessonHeading": "Never swallow errors with empty catch blocks",
+      "pattern": "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}|catch\\s*\\{\\s*\\}",
       "message": "Never swallow errors with empty catch blocks",
       "engine": "regex",
-      "severity": "warning",
-      "pattern": "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}|catch\\s*\\{\\s*\\}",
       "compiledAt": "2026-04-07T04:46:07.910Z",
       "createdAt": "2026-04-07T04:46:07.910Z",
       "fileGlobs": [
         "src/**/*.ts",
         "src/**/*.tsx"
+      ],
+      "severity": "warning"
+    },
+    {
+      "lessonHash": "24f237c4d1e43339",
+      "lessonHeading": "Use a validated config schema instead of direct process.env access",
+      "message": "Use a validated config schema instead of direct process.env access",
+      "engine": "regex",
+      "severity": "warning",
+      "pattern": "process\\.env(?:\\.|\\[)",
+      "compiledAt": "2026-04-07T05:10:42.733Z",
+      "createdAt": "2026-04-07T05:10:42.733Z",
+      "fileGlobs": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "!**/env.ts",
+        "!**/*.env.ts",
+        "!**/config/env.ts"
       ]
     },
     {
-      "lessonHash": "dc81751c276cd847",
+      "lessonHash": "3836c03a32a31f41",
       "lessonHeading": "Never build SQL queries with string concatenation",
       "message": "Never build SQL queries with string concatenation",
       "engine": "regex",
       "severity": "error",
-      "pattern": "\\b(?:[Ss][Ee][Ll][Ee][Cc][Tt]|[Ii][Nn][Ss][Ee][Rr][Tt]|[Uu][Pp][Dd][Aa][Tt][Ee]|[Dd][Ee][Ll][Ee][Tt][Ee])\\b[\\s\\S]*?(\\+|\\$\\{)",
-      "compiledAt": "2026-04-07T04:46:07.910Z",
-      "createdAt": "2026-04-07T04:46:07.910Z",
+      "pattern": "\\b(?:[Ss][Ee][Ll][Ee][Cc][Tt]|[Ii][Nn][Ss][Ee][Rr][Tt]|[Uu][Pp][Dd][Aa][Tt][Ee]|[Dd][Ee][Ll][Ee][Tt][Ee])\\b.*(\\+|\\$\\{)",
+      "compiledAt": "2026-04-07T05:10:42.734Z",
+      "createdAt": "2026-04-07T05:10:42.734Z",
       "fileGlobs": [
         "src/**/*.ts",
         "src/**/*.tsx"
