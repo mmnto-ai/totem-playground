@@ -656,13 +656,16 @@ describe('totem doctor --pr runSelfHealing downgrade (isolated temp repo)', () =
 
   const RULE_HASH = 'deadbeef12345678';  // 16 hex chars, fake but valid shape
   let tempDir;
+  let initialBranch;
 
   before(() => {
     tempDir = mkdtempSync(join(tmpdir(), 'totem-heal-'));
 
     // Initialise a git repo so doctor's dirty-state guard has something
     // to check against, and so runSelfHealing can commit its mutations.
-    execSync('git init -b main', { cwd: tempDir, stdio: 'ignore' });
+    // Plain `git init` (no `-b main`) for compatibility with Git < 2.28
+    // — matches the existing `totem hooks --strict` test in this file.
+    execSync('git init', { cwd: tempDir, stdio: 'ignore' });
     execSync('git config user.email "test@totem.test"', { cwd: tempDir, stdio: 'ignore' });
     execSync('git config user.name "Test"', { cwd: tempDir, stdio: 'ignore' });
 
@@ -755,6 +758,15 @@ describe('totem doctor --pr runSelfHealing downgrade (isolated temp repo)', () =
     // the downgrade phase if the rules file has uncommitted changes.
     execSync('git add -A', { cwd: tempDir, stdio: 'ignore' });
     execSync('git commit -m "initial" --no-verify', { cwd: tempDir, stdio: 'ignore' });
+
+    // Capture the initial branch name AFTER the first commit (HEAD has
+    // a target now).  Detected dynamically rather than hardcoded to 'main'
+    // because `git init` honours `init.defaultBranch`, which can be
+    // 'main', 'master', 'trunk', etc. depending on the user's git config.
+    initialBranch = execSync('git branch --show-current', {
+      cwd: tempDir,
+      encoding: 'utf8',
+    }).trim();
   });
 
   after(() => {
@@ -805,16 +817,27 @@ describe('totem doctor --pr runSelfHealing downgrade (isolated temp repo)', () =
     assert.ok(healBranch,
       `doctor --pr should have created a totem/auto-healing-* branch; git branch output was:\n${branchesRaw}`);
 
+    // Prove what the comment above claims: HEAD must be back on the
+    // original branch after doctor --pr returns, not stranded on the
+    // auto-healing branch.  Catches branch-discipline regressions in
+    // runSelfHealing's checkout-back step (doctor.js:990).
+    const currentBranch = execSync('git branch --show-current', {
+      cwd: tempDir,
+      encoding: 'utf8',
+    }).trim();
+    assert.equal(currentBranch, initialBranch,
+      `HEAD should be restored to "${initialBranch}" after doctor --pr, got "${currentBranch}"`);
+
     const rulesFromHealBranch = execSync(
       `git show ${healBranch}:.totem/compiled-rules.json`,
       { cwd: tempDir, encoding: 'utf8' },
     );
-    const after = JSON.parse(rulesFromHealBranch);
-    const rule = after.rules.find((r) => r.lessonHash === RULE_HASH);
+    const updatedRules = JSON.parse(rulesFromHealBranch);
+    const rule = updatedRules.rules.find((r) => r.lessonHash === RULE_HASH);
     assert.ok(rule, 'rule must still exist post-downgrade (ADR-027: never delete)');
     assert.equal(rule.severity, 'warning',
       `rule severity on ${healBranch} should be "warning", got "${rule.severity}"`);
-    assert.equal(after.rules.length, 1,
+    assert.equal(updatedRules.rules.length, 1,
       'rule count should be preserved — runSelfHealing never adds or removes rules');
   });
 });
