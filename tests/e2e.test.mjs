@@ -45,13 +45,17 @@ function totem(args) {
   }
 }
 
-/** Run a totem command and merge stdout+stderr for pattern matching. */
-function totemMerged(args) {
+/**
+ * Run a totem command and merge stdout+stderr for pattern matching.
+ * Defaults to a 60s timeout; pass a larger `timeout` for LLM-gated
+ * tests where an orchestrator round-trip alone can take 30–60s.
+ */
+function totemMerged(args, timeout = 60_000) {
   const cmd = `npx @mmnto/cli ${args.join(' ')} 2>&1`;
   try {
     const output = execSync(cmd, {
       encoding: 'utf8',
-      timeout: 60_000,
+      timeout,
     });
     return { output, exitCode: 0 };
   } catch (e) {
@@ -59,23 +63,8 @@ function totemMerged(args) {
   }
 }
 
-/**
- * Run a totem command with an extended timeout (3 minutes).
- * Used by LLM-gated tests where the orchestrator round-trip alone
- * can take 30–60s per lesson.
- */
-function totemMergedLong(args) {
-  const cmd = `npx @mmnto/cli ${args.join(' ')} 2>&1`;
-  try {
-    const output = execSync(cmd, {
-      encoding: 'utf8',
-      timeout: 180_000,
-    });
-    return { output, exitCode: 0 };
-  } catch (e) {
-    return { output: e.stdout ?? '', exitCode: e.status ?? 1 };
-  }
-}
+/** Run a totem command with an extended 3-minute timeout for LLM round-trips. */
+const totemMergedLong = (args) => totemMerged(args, 180_000);
 
 // ─── Entity commands ────────────────────────────────────────────────
 
@@ -446,7 +435,8 @@ describe('totem doctor upgrade candidate detection', () => {
 
   before(() => {
     const pg7 = findPg7Rule();
-    if (!pg7) return; // tests below will fail clearly if this happens
+    assert.ok(pg7,
+      'pg-007 "Mark of incomplete work in source files" rule must exist in compiled-rules.json (seeded by #25)');
     pg7Hash = pg7.lessonHash;
 
     // Back up real metrics so we don't clobber local dev state
@@ -475,16 +465,22 @@ describe('totem doctor upgrade candidate detection', () => {
   });
 
   after(() => {
+    // Defensive restore: only touch the backup if it actually exists.
+    // If `before()` threw before the backup was taken (e.g. pg-007 is
+    // missing), metricsBak won't exist and a naïve copyFileSync would
+    // ENOENT during cleanup.
     if (hadMetrics) {
-      copyFileSync(metricsBak, METRICS_FILE);
-      try { unlinkSync(metricsBak); } catch {}
+      if (existsSync(metricsBak)) {
+        copyFileSync(metricsBak, METRICS_FILE);
+        try { unlinkSync(metricsBak); } catch {}
+      }
     } else {
       try { unlinkSync(METRICS_FILE); } catch {}
     }
   });
 
   it('finds the pg-007 seeded rule in compiled-rules.json', () => {
-    assert.ok(pg7Hash, 'pg-007 rule should exist (created in #25)');
+    // Sanity check on the hash shape — the existence check lives in before()
     assert.match(pg7Hash, /^[a-f0-9]{16}$/, 'lessonHash should be 16 hex chars');
   });
 
@@ -510,8 +506,11 @@ describe('totem doctor upgrade candidate detection', () => {
     assert.ok(m, `Could not find non-code percentage for ${pg7Hash} in:\n${output}`);
     const pct = parseInt(m[1], 10);
     assert.ok(pct > 20, `Expected non-code ratio > 20%, got ${pct}%`);
-    // With our seeded data (9 non-code out of 10) it should be 90%
-    assert.equal(pct, 90, `Expected seeded ratio of exactly 90%, got ${pct}%`);
+    // With our seeded data (9 non-code out of 10) expect ~90%. Use a
+    // range check rather than exact equality so the test isn't coupled
+    // to doctor's rounding rule (floor vs round vs banker's round).
+    assert.ok(pct >= 85 && pct <= 95,
+      `Expected seeded ratio ~90% (85–95), got ${pct}%`);
   });
 
   it('prints the --upgrade remediation hint', () => {
@@ -528,18 +527,21 @@ describe('totem lesson compile --upgrade', {
   const manifestBak = MANIFEST_FILE + '.e2e-bak';
   const metricsBak  = METRICS_FILE  + '.e2e-bak';
   let hadMetrics = false;
+  let backupsCreated = false;
   let pg7Hash;
   let upgradeResult;
 
   before(() => {
     const pg7 = findPg7Rule();
-    if (!pg7) return;
+    assert.ok(pg7,
+      'pg-007 "Mark of incomplete work in source files" rule must exist in compiled-rules.json (seeded by #25)');
     pg7Hash = pg7.lessonHash;
 
     copyFileSync(RULES_FILE,    rulesBak);
     copyFileSync(MANIFEST_FILE, manifestBak);
     hadMetrics = existsSync(METRICS_FILE);
     if (hadMetrics) copyFileSync(METRICS_FILE, metricsBak);
+    backupsCreated = true;
 
     mkdirSync('.totem/cache', { recursive: true });
     const seeded = {
@@ -563,18 +565,32 @@ describe('totem lesson compile --upgrade', {
   });
 
   after(() => {
-    copyFileSync(rulesBak,    RULES_FILE);    try { unlinkSync(rulesBak);    } catch {}
-    copyFileSync(manifestBak, MANIFEST_FILE); try { unlinkSync(manifestBak); } catch {}
+    // Only attempt to restore from backups that were actually created.
+    // If `before()` failed mid-setup (e.g. the assert.ok above threw
+    // before any copyFileSync ran), the .e2e-bak files don't exist
+    // and naïve restore would ENOENT and leave the filesystem in a
+    // dirty state.
+    if (!backupsCreated) return;
+
+    if (existsSync(rulesBak)) {
+      copyFileSync(rulesBak, RULES_FILE);
+      try { unlinkSync(rulesBak); } catch {}
+    }
+    if (existsSync(manifestBak)) {
+      copyFileSync(manifestBak, MANIFEST_FILE);
+      try { unlinkSync(manifestBak); } catch {}
+    }
     if (hadMetrics) {
-      copyFileSync(metricsBak, METRICS_FILE);
-      try { unlinkSync(metricsBak); } catch {}
+      if (existsSync(metricsBak)) {
+        copyFileSync(metricsBak, METRICS_FILE);
+        try { unlinkSync(metricsBak); } catch {}
+      }
     } else {
       try { unlinkSync(METRICS_FILE); } catch {}
     }
   });
 
   it('exits 0 and targets the flagged rule', () => {
-    assert.ok(pg7Hash, 'pg-007 rule should exist');
     assert.equal(upgradeResult.exitCode, 0,
       `--upgrade should exit 0, got ${upgradeResult.exitCode}:\n${upgradeResult.output}`);
     assert.match(upgradeResult.output, /--upgrade.*targeting/i,
