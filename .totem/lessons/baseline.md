@@ -32,6 +32,11 @@ useEffect and useCallback capture variables from their closure scope. If a depen
 
 Every useEffect that creates a subscription, timer, or event listener MUST return a cleanup function. Without cleanup, effects leak memory and cause "setState on unmounted component" warnings. React StrictMode double-invokes effects specifically to catch this. Source: facebook/react#30954. Fix: Return a cleanup function from every useEffect that unsubscribes, clears timers, or removes listeners.
 
+**Pattern:** `(call_expression function: (identifier) @name (#eq? @name "useEffect") arguments: (arguments (arrow_function body: (statement_block) @body (#match? @body "(setTimeout|setInterval|addEventListener|\\.subscribe)") (#not-match? @body "return\\s*(\\(\\s*\\)|function)")))) @violation`
+**Engine:** ast
+**Scope:** src/**/*.ts, src/**/*.tsx
+**Severity:** warning
+
 ## Lesson — Impure effects break in StrictMode and Concurrent Mode
 
 **Tags:** react, hooks, universal

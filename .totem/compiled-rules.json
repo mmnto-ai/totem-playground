@@ -529,20 +529,6 @@
       "severity": "warning"
     },
     {
-      "lessonHash": "d52d4c0af66a0b66",
-      "lessonHeading": "Never swallow errors with empty catch blocks",
-      "pattern": "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}",
-      "message": "Never swallow errors with empty catch blocks",
-      "engine": "regex",
-      "compiledAt": "2026-04-07T04:06:56.579Z",
-      "createdAt": "2026-04-07T04:06:56.579Z",
-      "fileGlobs": [
-        "src/**/*.ts",
-        "src/**/*.tsx"
-      ],
-      "severity": "warning"
-    },
-    {
       "lessonHash": "adbd64fd92d18d17",
       "lessonHeading": "Use domain-specific error classes instead of raw throw new Error",
       "pattern": "throw\\s+new\\s+Error\\s*\\(",
@@ -571,20 +557,6 @@
       "severity": "warning"
     },
     {
-      "lessonHash": "2837b41d9934b28f",
-      "lessonHeading": "Never build SQL queries with string concatenation",
-      "pattern": "(SELECT|INSERT|UPDATE|DELETE)\\s+.*(\\+|\\$\\{)",
-      "message": "Never build SQL queries with string concatenation",
-      "engine": "regex",
-      "compiledAt": "2026-04-07T04:06:56.580Z",
-      "createdAt": "2026-04-07T04:06:56.580Z",
-      "fileGlobs": [
-        "src/**/*.ts",
-        "src/**/*.tsx"
-      ],
-      "severity": "error"
-    },
-    {
       "lessonHash": "52dcd83876cde0be",
       "lessonHeading": "Never use explicit any type annotations in application code",
       "pattern": ":\\s*any\\b",
@@ -601,12 +573,55 @@
     {
       "lessonHash": "168886d94ab00208",
       "lessonHeading": "Use a validated config schema instead of direct process.env access",
+      "pattern": "process\\.env(?:\\.|\\[)",
       "message": "Use a validated config schema instead of direct process.env access",
       "engine": "regex",
-      "severity": "warning",
-      "pattern": "process\\.env(?:\\.|\\[)",
       "compiledAt": "2026-04-07T04:08:37.215Z",
       "createdAt": "2026-04-07T04:08:37.215Z",
+      "fileGlobs": [
+        "src/**/*.ts",
+        "src/**/*.tsx"
+      ],
+      "severity": "warning"
+    },
+    {
+      "lessonHash": "a7de8649661cbdc2",
+      "lessonHeading": "Effects must clean up subscriptions and timers",
+      "message": "Effects must clean up subscriptions and timers",
+      "engine": "ast",
+      "severity": "warning",
+      "pattern": "",
+      "astQuery": "(call_expression function: (identifier) @name (#eq? @name \"useEffect\") arguments: (arguments (arrow_function body: (statement_block) @body (#match? @body \"(setTimeout|setInterval|addEventListener|\\\\.subscribe)\") (#not-match? @body \"return\\\\s*(\\\\(\\\\s*\\\\)|function)\")))) @violation",
+      "compiledAt": "2026-04-07T04:46:07.909Z",
+      "createdAt": "2026-04-07T04:46:07.909Z",
+      "fileGlobs": [
+        "src/**/*.ts",
+        "src/**/*.tsx"
+      ]
+    },
+    {
+      "lessonHash": "205ca7ed838bfeaf",
+      "lessonHeading": "Never swallow errors with empty catch blocks",
+      "message": "Never swallow errors with empty catch blocks",
+      "engine": "regex",
+      "severity": "warning",
+      "pattern": "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}|catch\\s*\\{\\s*\\}",
+      "compiledAt": "2026-04-07T04:46:07.910Z",
+      "createdAt": "2026-04-07T04:46:07.910Z",
+      "fileGlobs": [
+        "src/**/*.ts",
+        "src/**/*.tsx"
+      ]
+    },
+    {
+      "lessonHash": "dc81751c276cd847",
+      "lessonHeading": "Never build SQL queries with string concatenation",
+      "message": "Never build SQL queries with string concatenation",
+      "engine": "regex",
+      "severity": "error",
+      "pattern": "\\b(?:[Ss][Ee][Ll][Ee][Cc][Tt]|[Ii][Nn][Ss][Ee][Rr][Tt]|[Uu][Pp][Dd][Aa][Tt][Ee]|[Dd][Ee][Ll][Ee][Tt][Ee])\\b[\\s\\S]*?(\\+|\\$\\{)",
+      "compiledAt": "2026-04-07T04:46:07.910Z",
+      "createdAt": "2026-04-07T04:46:07.910Z",
       "fileGlobs": [
         "src/**/*.ts",
         "src/**/*.tsx"
@@ -616,7 +631,6 @@
   "nonCompilable": [
     "e61d1aae7b7a84b8",
     "ff14fb5608cb215d",
-    "7fc0dfeb02237a54",
     "32ddae57758da832",
     "0d8b84cdbd81ac7f",
     "c669f3dd0b894b02",

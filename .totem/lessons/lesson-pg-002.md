@@ -6,7 +6,7 @@
   
 Never leave a catch block empty. An empty catch silently discards the error, making failures invisible and debugging nearly impossible. At minimum log the error; preferably handle it explicitly or let it propagate to a centralized error handler.
 
-**Pattern:** `catch\s*\([^)]*\)\s*\{\s*\}`
+**Pattern:** `catch\s*\([^)]*\)\s*\{\s*\}|catch\s*\{\s*\}`
 **Engine:** regex
 **Scope:** src/**/*.ts, src/**/*.tsx
 **Severity:** warning
