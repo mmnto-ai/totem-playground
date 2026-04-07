@@ -22,6 +22,44 @@ npx @mmnto/cli lint
 
 No API keys needed. No config. Just clone and lint.
 
+### Try without Node.js
+
+If you're working in Rust, Go, or Python and don't want a Node.js toolchain on your machine, use the **Totem Lite** standalone binary — a single-file executable that ships the AST lint engine, diff parser, and baseline ruleset with zero runtime dependencies. Introduced in Totem 1.12.0.
+
+Clone the playground first, then download the binary for your platform **inside** the cloned directory so lint runs against it directly:
+
+```bash
+git clone https://github.com/mmnto-ai/totem-playground.git
+cd totem-playground
+
+# Linux (x64)
+curl -L https://github.com/mmnto-ai/totem/releases/latest/download/totem-lite-linux-x64 -o totem
+chmod +x totem
+
+# macOS (Apple Silicon)
+curl -L https://github.com/mmnto-ai/totem/releases/latest/download/totem-lite-darwin-arm64 -o totem
+chmod +x totem
+
+# Windows (x64)
+curl -L https://github.com/mmnto-ai/totem/releases/latest/download/totem-lite-win32-x64.exe -o totem.exe
+```
+
+Then run lint directly — no `npx`, no `pnpm`, no `node`:
+
+```bash
+# Linux / macOS
+./totem --version    # sanity check
+./totem lint
+```
+
+```powershell
+# Windows (PowerShell / cmd)
+.\totem.exe --version
+.\totem.exe lint
+```
+
+Totem Lite covers the deterministic governance surfaces: `init`, `lint`, `hooks`, `doctor`, `status`, `describe`, `rule list`, `import --from-eslint`, `verify-manifest`, and the other zero-LLM commands. Anything that needs Claude Sonnet or the LanceDB vector index — `compile`, `review`, `spec`, `extract`, `triage`, `handoff`, and `totem lesson compile --upgrade` — exits with code 78 and points you at `npx @mmnto/cli` for the full install.
+
 ## The 5 Violations
 
 | # | Violation | Where | Why it matters |
