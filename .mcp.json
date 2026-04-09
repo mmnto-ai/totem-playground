@@ -1,13 +1,9 @@
 {
   "mcpServers": {
     "totem": {
-      "type": "stdio",
-      "command": "cmd",
+      "command": "node",
       "args": [
-        "/c",
-        "npx",
-        "-y",
-        "@mmnto/mcp"
+        "./node_modules/@mmnto/mcp/dist/index.js"
       ]
     }
   }
