@@ -155,13 +155,14 @@ Expected output:
   ✓ Config             totem.config.ts found
   ✓ Compiled Rules     40 rules loaded
   ✓ Git Hooks          All 4 hooks installed
-  ✓ Embedding          ollama (gemma4)
+  ✓ Embedding          gemini (gemini-embedding-2-preview)
   ✓ Index              .lancedb/ exists
   ✓ Secret Scan        No leaked keys detected
   ✓ Secrets File Security secrets.json is not tracked by git
-  ! Upgrade Candidates 2 rule(s) firing in non-code contexts:
+  ! Upgrade Candidates 3 rule(s) firing in non-code contexts:
       b0db9b6d5e5475c1 (regex, 100% non-code, 6 matches),
-      cd5e47a67dc1ca0b (regex, 85% non-code, 20 matches)
+      cd5e47a67dc1ca0b (regex, 85% non-code, 20 matches),
+      98977f94c7e116c2 (regex, 71% non-code, 14 matches)
     → Run `totem compile --upgrade <hash>` to re-compile through
       Claude Sonnet with telemetry guidance.
 ```
