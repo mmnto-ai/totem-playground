@@ -631,14 +631,14 @@
       "severity": "error"
     },
     {
-      "lessonHash": "a9d2ea30a86ad96f",
+      "lessonHash": "cd5e47a67dc1ca0b",
       "lessonHeading": "Mark of incomplete work in source files",
-      "message": "TODO marker found — resolve or move to a tracked issue before committing.",
+      "message": "TODO marker found — resolve or remove before merging",
       "engine": "regex",
       "severity": "warning",
       "pattern": "[Tt][Oo][Dd][Oo]",
-      "compiledAt": "2026-04-07T05:50:38.600Z",
-      "createdAt": "2026-04-07T05:50:38.600Z",
+      "compiledAt": "2026-04-09T17:58:03.726Z",
+      "createdAt": "2026-04-09T17:58:03.726Z",
       "fileGlobs": [
         "**/*.ts",
         "**/*.tsx"
@@ -646,31 +646,109 @@
     }
   ],
   "nonCompilable": [
-    "e61d1aae7b7a84b8",
-    "ff14fb5608cb215d",
-    "32ddae57758da832",
-    "0d8b84cdbd81ac7f",
-    "c669f3dd0b894b02",
-    "4517d55cce6e0c5a",
-    "6172866282d2fe34",
-    "e1e7feac0b37ef7e",
-    "d2b906fe0d215594",
-    "83d2a72c7c1a6ce9",
-    "6d0d324379198d02",
-    "4ff5f652d6550e3f",
-    "3d0d954bd783b5e1",
-    "5b44a6c60a349284",
-    "cc9fcf96846a8511",
-    "88a28b0f2701dae7",
-    "5517fb1779dbccfe",
-    "c7e84f4f9051bad7",
-    "479d72b113657125",
-    "770a987a4d0c92e3",
-    "2718e7d9625c1ec7",
-    "136d4c012de026af",
-    "5f1d45714d3607b3",
-    "62765db12d5d3b19",
-    "f1ee319b9bb410c3",
-    "ddc06462c409ffa6"
+    {
+      "hash": "e61d1aae7b7a84b8",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "ff14fb5608cb215d",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "32ddae57758da832",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "0d8b84cdbd81ac7f",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "c669f3dd0b894b02",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "4517d55cce6e0c5a",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "6172866282d2fe34",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "e1e7feac0b37ef7e",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "d2b906fe0d215594",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "83d2a72c7c1a6ce9",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "6d0d324379198d02",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "4ff5f652d6550e3f",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "3d0d954bd783b5e1",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "5b44a6c60a349284",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "cc9fcf96846a8511",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "88a28b0f2701dae7",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "5517fb1779dbccfe",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "c7e84f4f9051bad7",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "479d72b113657125",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "770a987a4d0c92e3",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "2718e7d9625c1ec7",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "136d4c012de026af",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "5f1d45714d3607b3",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "62765db12d5d3b19",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "f1ee319b9bb410c3",
+      "title": "(legacy entry)"
+    },
+    {
+      "hash": "ddc06462c409ffa6",
+      "title": "(legacy entry)"
+    }
   ]
 }

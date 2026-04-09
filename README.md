@@ -127,7 +127,7 @@ Set `ANTHROPIC_API_KEY` in your environment to try P1 compile, P2, or P3 — the
 
 Totem 1.13.0 introduced the **Refinement Engine** — a self-healing loop that uses context telemetry from lint runs to identify rules that have grown noisy, then auto-narrows them through telemetry-guided re-compilation. The headline flow is:
 
-> `totem lint` (many times) → `totem doctor` (flags noisy rules) → `totem compile --upgrade <hash>` (re-compile with a telemetry directive) → narrower rule.
+> `totem lint` (many times) → `totem doctor` (flags noisy rules) → `totem lesson compile --upgrade <hash>` (re-compile with a telemetry directive) → narrower rule.
 
 The playground is pre-seeded with a deliberately noisy rule — **"Mark of incomplete work in source files"** (`.totem/lessons/lesson-pg-007.md`) — and adversarial `TODO` fixtures in `src/lib/todo-fixtures.ts` so you can walk the loop end-to-end. Requires `ANTHROPIC_API_KEY` for the `--upgrade` step; the rest is zero-LLM.
 
@@ -171,7 +171,7 @@ The doctor reads `rule-metrics.json`, computes each regex rule's non-code ratio 
 ### 3. Upgrade the flagged rule
 
 ```bash
-totem compile --upgrade a9d2ea30a86ad96f
+totem lesson compile --upgrade a9d2ea30a86ad96f
 ```
 
 Expected output:
