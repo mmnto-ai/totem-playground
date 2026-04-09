@@ -20,11 +20,11 @@ dependencies:
 
 devDependencies:
   '@mmnto/cli':
-    specifier: ^1.13.0
-    version: 1.13.0(@google/genai@1.48.0)
+    specifier: ^1.14.0
+    version: 1.14.0(@google/genai@1.48.0)
   '@mmnto/totem':
-    specifier: ^1.13.0
-    version: 1.13.0(@google/genai@1.48.0)
+    specifier: ^1.14.0
+    version: 1.14.0(@google/genai@1.48.0)
   '@types/node':
     specifier: ^22.0.0
     version: 22.19.17
@@ -480,6 +480,7 @@ packages:
   /@lancedb/lancedb@0.26.2(apache-arrow@17.0.0):
     resolution: {integrity: sha512-umk4WMCTwJntLquwvUbpqE+TXREolcQVL9MHcxr8EhRjsha88+ATJ4QuS/hpyiE1CG3R/XcgrMgJAGkziPC/gA==}
     engines: {node: '>= 18'}
+    cpu: [x64, arm64]
     os: [darwin, linux, win32]
     peerDependencies:
       apache-arrow: '>=15.0.0 <=18.1.0'
@@ -496,8 +497,8 @@ packages:
       '@lancedb/lancedb-win32-x64-msvc': 0.26.2
     dev: true
 
-  /@mmnto/cli@1.13.0(@google/genai@1.48.0):
-    resolution: {integrity: sha512-RpEAxMQcNmYz1pm61UKjaHkPjfRePiPoNLy7d13s5SyNPvleC4ZyFiHt5ieNY/a0mdQkhYZ8dsiPt2sDK6M2xw==}
+  /@mmnto/cli@1.14.0(@google/genai@1.48.0):
+    resolution: {integrity: sha512-AytJAH12Rhb129cAr6WzP2cSfl1HD5rtwus0bcWoY+Rm2+dfujizjkC1akTjx55UXXcRjCjC5czvqKKdBOb1oA==}
     hasBin: true
     peerDependencies:
       '@anthropic-ai/sdk': '>=0.50.0'
@@ -513,7 +514,7 @@ packages:
     dependencies:
       '@clack/prompts': 1.2.0
       '@google/genai': 1.48.0
-      '@mmnto/totem': 1.13.0(@google/genai@1.48.0)
+      '@mmnto/totem': 1.14.0(@google/genai@1.48.0)
       commander: 13.1.0
       dotenv: 16.6.1
       jiti: 2.6.1
@@ -529,8 +530,8 @@ packages:
       - ws
     dev: true
 
-  /@mmnto/totem@1.13.0(@google/genai@1.48.0):
-    resolution: {integrity: sha512-5LM0RHoRuUojbRiUAvX9KAq5raAmN1tsbAtOC95t7JTefjkf4lFb4QBwNcOpRdKsfzlDrtOSX3ykA6UHpUg9Eg==}
+  /@mmnto/totem@1.14.0(@google/genai@1.48.0):
+    resolution: {integrity: sha512-k+ibTq/T4mraIQQXi3oqLwdwd5p+br4tPLfVHb01FJbDAylVTr9TrYuWXO2m/Z+EZ+vQQ21SbeJYFiv9MoIdiA==}
     peerDependencies:
       '@google/genai': '>=1.0.0'
     peerDependenciesMeta:
