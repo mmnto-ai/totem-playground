@@ -167,7 +167,15 @@ Expected output:
       Claude Sonnet with telemetry guidance.
 ```
 
-The doctor reads `rule-metrics.json`, computes each regex rule's non-code ratio as `(strings + comments + regex) / total_classified`, and flags anything above the `NON_CODE_THRESHOLD` (20%). The seeded `cd5e47a67dc1ca0b` rule fires ~85% in non-code contexts — matching TODO mentions in strings, comments, and regex literals from `todo-fixtures.ts`. The baseline `b0db9b6d5e5475c1` rule ("Silent failures and TODO placeholders") shows up as an incidental candidate because it, too, matches comment-context TODOs.
+> **Note:** The specific candidates, hashes, and percentages above will vary
+> based on the telemetry accumulated from your own lint runs in step 1 — the
+> block is illustrative of a seeded playground's typical output. Also note
+> that doctor's `→ Run` hint shows the deprecated `totem compile --upgrade`
+> form rather than the canonical `totem lesson compile --upgrade` used in
+> step 3 below; this is a known quirk in 1.14.0 tracked upstream as
+> [mmnto-ai/totem#1309](https://github.com/mmnto-ai/totem/issues/1309).
+
+The doctor reads `rule-metrics.json`, computes each regex rule's non-code ratio as `(strings + comments + regex) / total_classified`, and flags anything above the `NON_CODE_THRESHOLD` (20%). The seeded `cd5e47a67dc1ca0b` rule fires ~85% in non-code contexts — matching TODO mentions in strings, comments, and regex literals from `todo-fixtures.ts`. The baseline `b0db9b6d5e5475c1` rule ("Silent failures and TODO placeholders") shows up as an incidental candidate because it, too, matches comment-context TODOs. A third candidate, `98977f94c7e116c2` ("Scaffolding scripts failing to respect existing .git states"), appears because its `\bgit\s+init\b` pattern hits example command strings in README prose and test fixtures where the context classifier buckets them as strings or comments.
 
 ### 3. Upgrade the flagged rule
 
