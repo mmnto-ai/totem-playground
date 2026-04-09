@@ -127,7 +127,7 @@ Set `ANTHROPIC_API_KEY` in your environment to try P1 compile, P2, or P3 — the
 
 Totem 1.13.0 introduced the **Refinement Engine** — a self-healing loop that uses context telemetry from lint runs to identify rules that have grown noisy, then auto-narrows them through telemetry-guided re-compilation. The headline flow is:
 
-> `totem lint` (many times) → `totem doctor` (flags noisy rules) → `totem compile --upgrade <hash>` (re-compile with a telemetry directive) → narrower rule.
+> `totem lint` (many times) → `totem doctor` (flags noisy rules) → `totem lesson compile --upgrade <hash>` (re-compile with a telemetry directive) → narrower rule.
 
 The playground is pre-seeded with a deliberately noisy rule — **"Mark of incomplete work in source files"** (`.totem/lessons/lesson-pg-007.md`) — and adversarial `TODO` fixtures in `src/lib/todo-fixtures.ts` so you can walk the loop end-to-end. Requires `ANTHROPIC_API_KEY` for the `--upgrade` step; the rest is zero-LLM.
 
@@ -161,24 +161,24 @@ Expected output:
   ✓ Secrets File Security secrets.json is not tracked by git
   ! Upgrade Candidates 2 rule(s) firing in non-code contexts:
       b0db9b6d5e5475c1 (regex, 100% non-code, 6 matches),
-      a9d2ea30a86ad96f (regex, 85% non-code, 20 matches)
+      cd5e47a67dc1ca0b (regex, 85% non-code, 20 matches)
     → Run `totem compile --upgrade <hash>` to re-compile through
       Claude Sonnet with telemetry guidance.
 ```
 
-The doctor reads `rule-metrics.json`, computes each regex rule's non-code ratio as `(strings + comments + regex) / total_classified`, and flags anything above the `NON_CODE_THRESHOLD` (20%). The seeded `a9d2ea30a86ad96f` rule fires ~85% in non-code contexts — matching TODO mentions in strings, comments, and regex literals from `todo-fixtures.ts`. The baseline `b0db9b6d5e5475c1` rule ("Silent failures and TODO placeholders") shows up as an incidental candidate because it, too, matches comment-context TODOs.
+The doctor reads `rule-metrics.json`, computes each regex rule's non-code ratio as `(strings + comments + regex) / total_classified`, and flags anything above the `NON_CODE_THRESHOLD` (20%). The seeded `cd5e47a67dc1ca0b` rule fires ~85% in non-code contexts — matching TODO mentions in strings, comments, and regex literals from `todo-fixtures.ts`. The baseline `b0db9b6d5e5475c1` rule ("Silent failures and TODO placeholders") shows up as an incidental candidate because it, too, matches comment-context TODOs.
 
 ### 3. Upgrade the flagged rule
 
 ```bash
-totem compile --upgrade a9d2ea30a86ad96f
+totem lesson compile --upgrade cd5e47a67dc1ca0b
 ```
 
 Expected output:
 
 ```text
 [Compile] Found 66 lessons
-[Compile] --upgrade: targeting a9d2ea30a86ad96f (Mark of incomplete work in source files)
+[Compile] --upgrade: targeting cd5e47a67dc1ca0b (Mark of incomplete work in source files)
 [Compile] --upgrade: telemetry directive prepared (244 chars)
 [Compile] Compiling...
 [Compile] Model: claude-sonnet-4-6
@@ -204,7 +204,7 @@ git diff .totem/compiled-rules.json
 totem lint
 ```
 
-`compiled-rules.json` will show the updated entry for `a9d2ea30a86ad96f` — at minimum `compiledAt` refreshes and `message` may be rephrased; if the pattern narrowed, you'll see the regex or `engine` field change. Re-running `totem lint` against the same fixtures should show fewer (or no) warnings if the pattern was narrowed, and the same count if Sonnet kept the pattern.
+`compiled-rules.json` will show the updated entry for `cd5e47a67dc1ca0b` — at minimum `compiledAt` refreshes and `message` may be rephrased; if the pattern narrowed, you'll see the regex or `engine` field change. Re-running `totem lint` against the same fixtures should show fewer (or no) warnings if the pattern was narrowed, and the same count if Sonnet kept the pattern.
 
 ### 5. The full self-healing sweep (optional)
 

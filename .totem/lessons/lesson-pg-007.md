@@ -1,6 +1,6 @@
 ## Lesson — Mark of incomplete work in source files
 
-Flag every occurrence of the substring `TODO` (case-insensitive) in TypeScript source files — in identifiers, string literals, comments, and regex literals alike. Start broad on purpose: context telemetry drives later refinement into a code-only ast-grep pattern via `totem compile --upgrade <hash>`.
+Flag every occurrence of the substring `TODO` (case-insensitive) in TypeScript source files — in identifiers, string literals, comments, and regex literals alike. Start broad on purpose: context telemetry drives later refinement into a code-only ast-grep pattern via `totem lesson compile --upgrade <hash>`.
 
 **Bad:**
 ```ts
