@@ -10,6 +10,8 @@ const config: TotemConfig = {
   ],
 
   ignorePatterns: ['**/node_modules/**', '**/.next/**', '**/dist/**'],
+
+  linkedIndexes: ['../totem', '../totem-strategy'],
 };
 
 export default config;
