@@ -1,10 +1,20 @@
 node_modules/
 .next/
 .lancedb/
+
+# pnpm-only: reject stray npm lockfiles
+package-lock.json
+
+# Totem runtime artifacts (mirrors main mmnto-ai/totem repo .gitignore)
 .totem/sync.lock
 .totem/cache/
 .totem/temp/
 .totem/secrets.json
+.totem/ledger/
+.totem/*.log
+.totem/*.jsonl
+.totem/.search-called
+
 .claude/
 .env
 .env.local
