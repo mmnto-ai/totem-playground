@@ -4,7 +4,7 @@
   "remoteEnv": {
     "PATH": "${containerWorkspaceFolder}/node_modules/.bin:${containerEnv:PATH}"
   },
-  "postCreateCommand": "corepack enable && pnpm install && (git fetch --unshallow 2>/dev/null; git reset HEAD~1 && git add -A || true) && echo '\n🎯 Totem Playground ready!\nRun: totem lint --staged\n'",
+  "postCreateCommand": "corepack enable && pnpm install && (git fetch --unshallow 2>/dev/null || true) && git reset HEAD~1 && git add -A && echo '\n🎯 Totem Playground ready!\nRun: totem lint --staged\n'",
   "customizations": {
     "vscode": {
       "settings": {
