@@ -1,7 +1,7 @@
 {
   "name": "Totem Playground",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
-  "postCreateCommand": "sudo corepack enable && pnpm install && sudo ln -sf \"${PWD}/node_modules/.bin/totem\" /usr/local/bin/totem && sudo ln -sf \"${PWD}/node_modules/.bin/totem-mcp\" /usr/local/bin/totem-mcp && (git fetch --unshallow 2>/dev/null || true) && git reset HEAD~1 && git add -A && echo '\n🎯 Totem Playground ready!\nRun: totem lint --staged\n'",
+  "postCreateCommand": "sudo corepack enable && pnpm install && echo \"export PATH=\\\"${PWD}/node_modules/.bin:\\$PATH\\\"\" >> ~/.bashrc && (git fetch --unshallow 2>/dev/null || true) && git reset HEAD~1 && git add -A && echo '\n🎯 Totem Playground ready!\nRun: totem lint --staged\n'",
   "customizations": {
     "vscode": {
       "settings": {
