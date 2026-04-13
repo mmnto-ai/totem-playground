@@ -58,6 +58,6 @@ This makes `totem lint --staged` see the violation files as new staged additions
 
 ## Cross-Repo Context
 
-- **totem** (`D:\Dev\totem`) — the main totem monorepo
-- **totem-strategy** (`D:\Dev\totem-strategy`) — governance, ADRs, journal entries
+- **totem** — the main totem monorepo (sibling directory)
+- **totem-strategy** — governance, ADRs, journal entries (sibling directory)
 - Journal entries for this repo live in `totem-strategy/.journal/totem-playground/`
