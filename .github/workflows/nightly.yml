@@ -19,11 +19,14 @@ jobs:
         with:
           node-version: 22
 
+      - name: Install pnpm
+        run: corepack enable
+
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Install latest @mmnto packages
-        run: npm install --no-save @mmnto/cli@latest @mmnto/totem@latest
+        run: pnpm add --save-dev @mmnto/cli@latest @mmnto/totem@latest
 
       # ── Entity / import tests (no git state needed) ──
       - name: Run entity & import tests
