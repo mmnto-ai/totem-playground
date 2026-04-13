@@ -1,7 +1,7 @@
 {
   "name": "Totem Playground",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
-  "postCreateCommand": "sudo corepack enable && pnpm install && git fetch --unshallow 2>/dev/null; git reset HEAD~1 && git add -A && (grep -q 'Totem Playground ready' ~/.bashrc || echo \"echo -e '\\n🎯 Totem Playground ready!\\nRun: pnpm exec totem lint --staged\\n'\" >> ~/.bashrc)",
+  "postCreateCommand": "sudo corepack enable && pnpm install && git checkout --orphan demo && git reset && git add package.json tsconfig.json totem.config.ts src/app/page.tsx src/app/layout.tsx README.md .totem/compiled-rules.json .eslintrc.json && git commit -m baseline --no-verify && git branch -M main && git add src/app/api/ src/lib/ src/middleware/ && (grep -q 'Totem Playground ready' ~/.bashrc || echo \"echo -e '\\n🎯 Totem Playground ready!\\nRun: pnpm exec totem lint --staged\\n'\" >> ~/.bashrc)",
   "customizations": {
     "vscode": {
       "settings": {
