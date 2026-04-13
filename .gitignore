@@ -15,6 +15,7 @@ package-lock.json
 .totem/*.jsonl
 .totem/.search-called
 
-.claude/
+.claude/settings.local.json
+.claude/worktrees/
 .env
 .env.local
