@@ -147,7 +147,7 @@ Each matching line is classified by its AST context (code, string, comment, rege
 totem doctor
 ```
 
-Expected output:
+Expected output (captured on Totem 1.15.0):
 
 ```text
 [Totem] Running diagnostics...
@@ -182,7 +182,7 @@ The doctor reads `rule-metrics.json`, computes each regex rule's non-code ratio 
 totem lesson compile --upgrade cd5e47a67dc1ca0b
 ```
 
-Expected output:
+Expected output (captured on Totem 1.15.0):
 
 ```text
 [Compile] Found 66 lessons
