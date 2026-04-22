@@ -554,11 +554,10 @@ describe('totem doctor upgrade candidate detection', () => {
   it('prints the --upgrade remediation hint', () => {
     const { output } = totemMerged(['doctor']);
     // Accepts both `totem compile --upgrade` (deprecated alias) and
-    // `totem lesson compile --upgrade` (the 1.14.0 canonical form).
-    // As of 1.14.0, upstream `totem doctor` still emits the deprecated
-    // alias in its hint string — when that's fixed upstream, this regex
-    // can be tightened to require the `lesson ` prefix. See #39 and the
-    // upstream mmnto-ai/totem companion ticket.
+    // `totem lesson compile --upgrade` (the canonical form).
+    // The canonical form has been the default emitted by `totem doctor`
+    // since the fix for mmnto-ai/totem#1309 landed. The regex stays
+    // permissive so older pinned versions still pass. See #39.
     assert.match(output, /totem (?:lesson )?compile --upgrade/,
       'doctor should suggest the --upgrade command (either form)');
   });

@@ -163,17 +163,16 @@ Expected output:
       b0db9b6d5e5475c1 (regex, 100% non-code, 6 matches),
       cd5e47a67dc1ca0b (regex, 85% non-code, 20 matches),
       98977f94c7e116c2 (regex, 71% non-code, 14 matches)
-    → Run `totem compile --upgrade <hash>` to re-compile through
+    → Run `totem lesson compile --upgrade <hash>` to re-compile through
       Claude Sonnet with telemetry guidance.
 ```
 
 > **Note:** The specific candidates, hashes, and percentages above will vary
-> based on the telemetry accumulated from your own lint runs in step 1 — the
-> block is illustrative of a seeded playground's typical output. Also note
-> that doctor's `→ Run` hint shows the deprecated `totem compile --upgrade`
-> form rather than the canonical `totem lesson compile --upgrade` used in
-> step 3 below; this is a known quirk in 1.14.0 tracked upstream as
-> [mmnto-ai/totem#1309](https://github.com/mmnto-ai/totem/issues/1309).
+> based on the telemetry accumulated from your own lint runs in step 1. The
+> block is illustrative of a seeded playground's typical output. The
+> `→ Run` hint emits the canonical `totem lesson compile --upgrade` form,
+> matching step 3 below ([mmnto-ai/totem#1309](https://github.com/mmnto-ai/totem/issues/1309)
+> resolved this earlier 1.14.0 alias drift).
 
 The doctor reads `rule-metrics.json`, computes each regex rule's non-code ratio as `(strings + comments + regex) / total_classified`, and flags anything above the `NON_CODE_THRESHOLD` (20%). The seeded `cd5e47a67dc1ca0b` rule fires ~85% in non-code contexts — matching TODO mentions in strings, comments, and regex literals from `todo-fixtures.ts`. The baseline `b0db9b6d5e5475c1` rule ("Silent failures and TODO placeholders") shows up as an incidental candidate because it, too, matches comment-context TODOs. A third candidate, `98977f94c7e116c2` ("Scaffolding scripts failing to respect existing .git states"), appears because its `\bgit\s+init\b` pattern matches the `execSync('git init', ...)` calls in `tests/e2e.test.mjs` that spin up isolated temp git repositories for testing, along with the inline comments explaining why the plain form (without `-b main`) is used for Git < 2.28 compatibility. Those comment-context hits drive the non-code ratio above doctor's 20% threshold.
 

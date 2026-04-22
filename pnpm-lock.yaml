@@ -20,14 +20,14 @@ dependencies:
 
 devDependencies:
   '@mmnto/cli':
-    specifier: ^1.14.6
-    version: 1.14.6(@google/genai@1.48.0)
+    specifier: ^1.15.0
+    version: 1.15.0(@google/genai@1.48.0)
   '@mmnto/mcp':
-    specifier: ^1.14.6
-    version: 1.14.6(@google/genai@1.48.0)
+    specifier: ^1.15.0
+    version: 1.15.0(@google/genai@1.48.0)
   '@mmnto/totem':
-    specifier: ^1.14.6
-    version: 1.14.6(@google/genai@1.48.0)
+    specifier: ^1.15.0
+    version: 1.15.0(@google/genai@1.48.0)
   '@types/node':
     specifier: ^22.0.0
     version: 22.19.17
@@ -492,6 +492,7 @@ packages:
   /@lancedb/lancedb@0.26.2(apache-arrow@17.0.0):
     resolution: {integrity: sha512-umk4WMCTwJntLquwvUbpqE+TXREolcQVL9MHcxr8EhRjsha88+ATJ4QuS/hpyiE1CG3R/XcgrMgJAGkziPC/gA==}
     engines: {node: '>= 18'}
+    cpu: [x64, arm64]
     os: [darwin, linux, win32]
     peerDependencies:
       apache-arrow: '>=15.0.0 <=18.1.0'
@@ -508,8 +509,8 @@ packages:
       '@lancedb/lancedb-win32-x64-msvc': 0.26.2
     dev: true
 
-  /@mmnto/cli@1.14.6(@google/genai@1.48.0):
-    resolution: {integrity: sha512-XO4mAK3bJ5/XKJOwNwUnSRvEmdcBI2UCXfbvS2VJnujAW0rEKhnSo/RsafGzO/ix/xEIPzNOUogzhpXwKxFylw==}
+  /@mmnto/cli@1.15.0(@google/genai@1.48.0):
+    resolution: {integrity: sha512-v0ftaPT0pArqJ0u70Ty1iqPWlvj7gCaXsCczEzY9tvo+RWjMQIDdjvRMFqUSdP7uKofxhxbKaJeoHSq8KFgDpg==}
     hasBin: true
     peerDependencies:
       '@anthropic-ai/sdk': '>=0.50.0'
@@ -525,7 +526,7 @@ packages:
     dependencies:
       '@clack/prompts': 1.2.0
       '@google/genai': 1.48.0
-      '@mmnto/totem': 1.14.6(@google/genai@1.48.0)
+      '@mmnto/totem': 1.15.0(@google/genai@1.48.0)
       commander: 13.1.0
       dotenv: 16.6.1
       jiti: 2.6.1
@@ -541,11 +542,11 @@ packages:
       - ws
     dev: true
 
-  /@mmnto/mcp@1.14.6(@google/genai@1.48.0):
-    resolution: {integrity: sha512-yYNZcdZJishnlrtsiub3j1EEY7/WHIWz6OexOUIYr4VQQ00+R6mSlTCcBZvMm2G4czoGQZiyJgDKWMLRdtoNYQ==}
+  /@mmnto/mcp@1.15.0(@google/genai@1.48.0):
+    resolution: {integrity: sha512-oZJknmSXuCi5FMXEOXFXg2XU8SKvfHKavNaeFuIc4Yz0UFm8QKFcP88W1GzBIDghilRYlshWerLBMQ1IFRrgcA==}
     hasBin: true
     dependencies:
-      '@mmnto/totem': 1.14.6(@google/genai@1.48.0)
+      '@mmnto/totem': 1.15.0(@google/genai@1.48.0)
       '@modelcontextprotocol/sdk': 1.29.0(zod@3.25.76)
       dotenv: 16.6.1
       jiti: 2.6.1
@@ -559,8 +560,8 @@ packages:
       - ws
     dev: true
 
-  /@mmnto/totem@1.14.6(@google/genai@1.48.0):
-    resolution: {integrity: sha512-XP/X37Z0fNIyiu7LlKrpXz50ulMPWiGsOv0Ysrrfv6VZRuk2AU7Ou0n2wXzvEWdkQyWfiDgg8T9f8AhSWl2CsA==}
+  /@mmnto/totem@1.15.0(@google/genai@1.48.0):
+    resolution: {integrity: sha512-QrqAl/dTuqeTQqCUi738E5S/nGYC47/1Xjfuj5yrJ3l9w8WP+5L5p/sDPrLw/NECM0XDwEIppSafDOgzt61U4g==}
     peerDependencies:
       '@google/genai': '>=1.0.0'
     peerDependenciesMeta:
