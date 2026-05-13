@@ -13,7 +13,7 @@ Before writing code or making changes:
 
 ## Essentials
 
-- **pnpm only** (never npm/yarn). Windows 11 + Git Bash. TypeScript strict mode.
+- **pnpm only** (never npm/yarn). Use `pnpm dlx` (never `npx`). Windows 11 + Git Bash. TypeScript strict mode.
 - `main` is protected. Feature branches + PRs. `Closes #NNN` in PR bodies.
 - Run checks locally before pushing — don't rely on CI to catch issues.
 - This repo has intentional violations in `src/app/api/`, `src/lib/`, and `src/middleware/`. Do NOT fix them — they are the demo.
@@ -58,3 +58,4 @@ After >15 turns of changes: re-read this file, run `pnpm exec totem status`, and
 - [Contributing rules](.claude/docs/contributing.md) — git conventions, code style, intentional-violations demo
 - [Architecture context](.claude/docs/architecture.md) — repo structure, demo design, rule engines
 - [Agent workflow](.claude/docs/agent-workflow.md) — delegation rules, dispatch templates
+- [Gemini styleguide](.gemini/styleguide.md) — architectural patterns and coding conventions (Gemini CLI sessions read this directly)
