@@ -49,6 +49,6 @@ After >15 turns of changes: re-read this file, run `pnpm exec totem status`, and
 
 ## Detailed Docs
 
-- [Contributing rules](.claude/docs/contributing.md) — git conventions, code style, changesets
+- [Contributing rules](.claude/docs/contributing.md) — git conventions, code style, intentional-violations demo
 - [Architecture context](.claude/docs/architecture.md) — repo structure, demo design, rule engines
 - [Agent workflow](.claude/docs/agent-workflow.md) — delegation rules, dispatch templates
