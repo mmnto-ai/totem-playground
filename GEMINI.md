@@ -1,13 +1,7 @@
-# Totem Playground — Development Rules
+# Totem Playground: Gemini CLI Entry Point
 
-## Essentials
+The canonical agent instructions for this repository live in [`AGENTS.md`](AGENTS.md).
 
-- **pnpm only** (never npm/yarn). Use `pnpm dlx` (never `npx`). Windows 11 + Git Bash. TypeScript strict mode.
-- `main` is protected. Feature branches + PRs. Never amend commits on feature branches.
-- Use `Closes #NNN` in PR descriptions.
-- `kebab-case.ts` files, `err` (never `error`) in catch blocks, no empty catches.
-- **NEVER put secrets in config files.** `.env` only.
+Per [Totem ADR-038 "AGENTS.md Standard Adoption"](https://github.com/mmnto-ai/totem-strategy/blob/main/adr/adr-038-agents-md-standard.md), `mmnto-ai/totem-playground` uses a single `AGENTS.md` as the source of truth for how all AI coding agents (Claude Code, Gemini CLI, Cursor, etc.) should behave here. This file exists only so Gemini CLI finds its way to `AGENTS.md`.
 
-## Detailed Rules
-
-- See `.gemini/styleguide.md` for full code style, naming, and architecture rules.
+Read `AGENTS.md` before doing anything else.
