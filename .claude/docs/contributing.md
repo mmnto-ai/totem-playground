@@ -8,21 +8,7 @@
 
 ## PR Review Bot Protocol
 
-Two bots review PRs. Their interaction models are completely different.
-
-### CodeRabbit (CR)
-
-- Reply inline to any CR comment thread freely.
-- CR reads every reply automatically — no tagging needed.
-- One reply per finding is fine; multiple exchanges are normal.
-
-### Gemini Code Assist (GCA)
-
-- ONE batched top-level PR comment per PR. Never reply inline to individual GCA threads.
-- Every GCA reply MUST contain `@gemini-code-assist` — GCA only sees messages that tag it explicitly.
-- Batch all findings into a single numbered-list response.
-
-> **WARNING:** Inline thread replies to GCA are invisible and silently ignored.
+Centralized per ADR-105 in `mmnto-ai/totem-strategy`. See [`doctrine/bot-protocols.md`](https://github.com/mmnto-ai/totem-strategy/blob/main/doctrine/bot-protocols.md) for the canonical CR + GCA + Greptile + CodeQL interaction protocols. The Bot-Protocol Gate § in `CLAUDE.md` is the load-bearing pointer.
 
 ## Intentional Violations
 
