@@ -31,12 +31,17 @@ Before writing any code or making any changes:
 - `/signoff` — end-of-session memory + cleanup
 - `/review-reply <pr>` — triage and reply to PR bot comments
 
-## PR Bot Protocol
+## Bot-Protocol Gate (load-bearing — ADR-105 Layer 3)
 
-Two bots review PRs — their interaction models are different:
+Before posting ANY PR comment, replying to ANY bot, or running `gh pr comment` / `gh api .../comments`:
 
-- **CodeRabbit:** Reply inline to each comment freely. No quota.
-- **GCA (Gemini Code Assist):** ONE batched comment in the main PR thread with `@gemini-code-assist`. Never reply inline to GCA threads.
+1. **Read** [`mmnto-ai/totem-strategy:doctrine/bot-protocols.md`](https://github.com/mmnto-ai/totem-strategy/blob/main/doctrine/bot-protocols.md) if you haven't this session.
+2. **Apply** the consolidated round-comment SOP (doctrine § 8.1) — ONE main-thread comment per round, structured table, tag only bots with a role this round.
+3. **Never** combine `@gemini-code-assist` + `/gemini review` in the same comment (doctrine § 1.2 — XOR Tag Rule; burns GCA quota).
+4. **Never** reply citing a SHA before pushing (doctrine § 1.1 — GCA reviews stale state, wastes quota).
+5. **Workflow surface:** prefer the `/review-reply` skill — it operationalizes the SOP end-to-end.
+
+Enforcement stack per [ADR-105](https://github.com/mmnto-ai/totem-strategy/blob/main/adr/adr-105-bot-protocol-centralization.md): (1) PreToolUse hooks (queued — `mmnto-ai/totem#1900`); (2) skill instructions; (3) **this CLAUDE.md** (baseline awareness); (4) auto-memory pointer (`feedback_bot_protocols_centralized`).
 
 ## Context Decay Prevention
 
@@ -44,6 +49,6 @@ After >15 turns of changes: re-read this file, run `pnpm exec totem status`, and
 
 ## Detailed Docs
 
-- [Contributing rules](.claude/docs/contributing.md) — git conventions, PR bot protocol, code style
+- [Contributing rules](.claude/docs/contributing.md) — git conventions, code style, changesets
 - [Architecture context](.claude/docs/architecture.md) — repo structure, demo design, rule engines
 - [Agent workflow](.claude/docs/agent-workflow.md) — delegation rules, dispatch templates
