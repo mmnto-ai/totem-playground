@@ -8,7 +8,7 @@
 
 ## PR Review Bot Protocol
 
-Centralized per ADR-105 in `mmnto-ai/totem-strategy`. See [`doctrine/bot-protocols.md`](https://github.com/mmnto-ai/totem-strategy/blob/main/doctrine/bot-protocols.md) for the canonical CR + GCA + Greptile + CodeQL interaction protocols. The Bot-Protocol Gate § in `CLAUDE.md` is the load-bearing pointer.
+Centralized per ADR-105 in `mmnto-ai/totem-strategy`. See [`doctrine/bot-protocols.md`](https://github.com/mmnto-ai/totem-strategy/blob/main/doctrine/bot-protocols.md) for the canonical CR + GCA + Greptile + CodeQL interaction protocols. The Bot-Protocol Gate § in `AGENTS.md` is the load-bearing pointer.
 
 ## Intentional Violations
 
