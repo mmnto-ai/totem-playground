@@ -16,6 +16,12 @@ package-lock.json
 .totem/.search-called
 .totem/review-extensions.txt
 
+# Local-only orchestration per Proposal 282 (mmnto-ai/totem-strategy#341).
+# Each agent writes journals + handoffs into .totem/orchestration/<agent-id>/.
+# Contents are intentionally NOT tracked — substrate (mmnto-ai/totem-substrate)
+# remains the frozen archive for historical orchestration through cutover.
+.totem/orchestration/
+
 .claude/settings.local.json
 .claude/worktrees/
 .env
