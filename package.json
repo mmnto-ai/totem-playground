@@ -16,9 +16,9 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@mmnto/cli": "^1.38.0",
-    "@mmnto/mcp": "^1.38.0",
-    "@mmnto/totem": "^1.38.0",
+    "@mmnto/cli": "^1.43.2",
+    "@mmnto/mcp": "^1.43.2",
+    "@mmnto/totem": "^1.43.2",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "typescript": "^5.0.0"
