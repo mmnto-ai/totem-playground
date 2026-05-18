@@ -20,14 +20,14 @@ dependencies:
 
 devDependencies:
   '@mmnto/cli':
-    specifier: ^1.43.5
-    version: 1.43.5(@google/genai@1.48.0)
+    specifier: ^1.43.6
+    version: 1.43.6(@google/genai@1.48.0)
   '@mmnto/mcp':
-    specifier: ^1.43.5
-    version: 1.43.5(@google/genai@1.48.0)
+    specifier: ^1.43.6
+    version: 1.43.6(@google/genai@1.48.0)
   '@mmnto/totem':
-    specifier: ^1.43.5
-    version: 1.43.5(@google/genai@1.48.0)
+    specifier: ^1.43.6
+    version: 1.43.6(@google/genai@1.48.0)
   '@types/node':
     specifier: ^22.0.0
     version: 22.19.17
@@ -509,8 +509,8 @@ packages:
       '@lancedb/lancedb-win32-x64-msvc': 0.26.2
     dev: true
 
-  /@mmnto/cli@1.43.5(@google/genai@1.48.0):
-    resolution: {integrity: sha512-PiK6/ys0cwgLXCfauHAU5yyVU3ND93WrrBwEKExVXh++HsH/G29AeFSyaVAsTViCnBN+Z8bfa5IhuR4dFl41Ug==}
+  /@mmnto/cli@1.43.6(@google/genai@1.48.0):
+    resolution: {integrity: sha512-u/kPHSmiP1O0Izvm2b7CpDTCPSbKSe7Wgj+/dxHbcZTi0UxwGLadwJD92A1zSpZpGA39Lt7wqPu5MGuJBXm2zA==}
     hasBin: true
     peerDependencies:
       '@anthropic-ai/sdk': '>=0.50.0'
@@ -526,7 +526,7 @@ packages:
     dependencies:
       '@clack/prompts': 1.2.0
       '@google/genai': 1.48.0
-      '@mmnto/totem': 1.43.5(@google/genai@1.48.0)
+      '@mmnto/totem': 1.43.6(@google/genai@1.48.0)
       commander: 13.1.0
       dotenv: 16.6.1
       jiti: 2.6.1
@@ -542,11 +542,11 @@ packages:
       - ws
     dev: true
 
-  /@mmnto/mcp@1.43.5(@google/genai@1.48.0):
-    resolution: {integrity: sha512-N4sG8Tpi3HIu2h5dazpaIveWFksS7bUYe8nWTZ/WnkE7VQDbjMyowPVmrum75mihSDyKf5+vdCNHDppbpyETHA==}
+  /@mmnto/mcp@1.43.6(@google/genai@1.48.0):
+    resolution: {integrity: sha512-D9wfrjUprRB0vHohlPtNHgTsxwjc4guEmniy4NfEeOhX+dfDTSvzxs2o941lKtyHh8Kq7+R5GFNyLkVYa08Gog==}
     hasBin: true
     dependencies:
-      '@mmnto/totem': 1.43.5(@google/genai@1.48.0)
+      '@mmnto/totem': 1.43.6(@google/genai@1.48.0)
       '@modelcontextprotocol/sdk': 1.29.0(zod@3.25.76)
       dotenv: 16.6.1
       jiti: 2.6.1
@@ -560,8 +560,8 @@ packages:
       - ws
     dev: true
 
-  /@mmnto/totem@1.43.5(@google/genai@1.48.0):
-    resolution: {integrity: sha512-q4bwwviuJscSwo53vky83GdlX5rPhLks5n25da1D6wvUwtrLycg/GuH7dAONfogPUmsjrBtaSDCStwyM3mG2Ng==}
+  /@mmnto/totem@1.43.6(@google/genai@1.48.0):
+    resolution: {integrity: sha512-EPQ4pfCu5QQSqc2sjY0eqB2TGtOsPR9J7C9omX9PnuGbfnwgZ5hJOcraAp+zVeecjj6BpWXxy+1MgiaX1z3HtA==}
     peerDependencies:
       '@google/genai': '>=1.0.0'
     peerDependenciesMeta:
